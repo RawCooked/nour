@@ -1,0 +1,7 @@
+# Images générées par optimiser_images.py (refaites par la mise en ligne)
+img/web/
+dist/
+# Clés : ne jamais les mettre dans le dépôt
+*_ci
+*_ci.pub
+id_*

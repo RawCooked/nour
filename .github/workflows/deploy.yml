@@ -1,0 +1,45 @@
+name: Mise en ligne
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Optimiser les images
+        run: |
+          pip install --quiet pillow numpy
+          python optimiser_images.py
+
+      - name: Préparer le dossier publié
+        run: |
+          mkdir -p dist/img
+          cp index.html dist/
+          cp -r img/web dist/img/web
+
+      - name: Envoyer sur le VPS
+        env:
+          VPS_HOTE: ${{ secrets.VPS_HOTE }}
+          VPS_UTILISATEUR: ${{ secrets.VPS_UTILISATEUR }}
+          VPS_CLE_SSH: ${{ secrets.VPS_CLE_SSH }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$VPS_CLE_SSH" > ~/.ssh/deploy
+          chmod 600 ~/.ssh/deploy
+          ssh-keyscan -H "$VPS_HOTE" >> ~/.ssh/known_hosts 2>/dev/null
+          rsync -rlz --delete --chmod=D755,F644 \
+            -e "ssh -i ~/.ssh/deploy" \
+            dist/ "$VPS_UTILISATEUR@$VPS_HOTE:/var/www/nour-aissam/site/"
