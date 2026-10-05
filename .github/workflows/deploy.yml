@@ -42,4 +42,4 @@ jobs:
           ssh-keyscan -H "$VPS_HOTE" >> ~/.ssh/known_hosts 2>/dev/null
           rsync -rlz --delete --chmod=D755,F644 \
             -e "ssh -i ~/.ssh/deploy" \
-            dist/ "$VPS_UTILISATEUR@$VPS_HOTE:/var/www/nour-aissam/site/"
+            dist/ "$VPS_UTILISATEUR@$VPS_HOTE:/opt/nour/site/"
