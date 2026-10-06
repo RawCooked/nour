@@ -733,12 +733,13 @@ function makeEngine() {
   // La scène « Main dans la main » : plage, couple qui danse, chien et chat qui se promènent, lucioles dorées
   const DANCE_COLS = 4, DANCE_ROWS = 3, DANCE_COUNT = 11, DANCE_FPS = 2.2, DANCE_SHOE = 0.0850;   // img/web/couple-danse.webp : 11 images, 2,2 par seconde (cycle ≈ 5 s)
   // Les promeneurs : planches de 9 images ; width = largeur à l'écran en fraction de la hauteur du couple ; stride = distance
-  // parcourue par cycle (en largeurs d'animal) ; speed = vitesse relative ; y = hauteur du sol ; start/rest = départ (fraction de la largeur)
+  // parcourue par cycle (en largeurs d'animal) ; speed = vitesse relative ; y = hauteur du sol ; start/rest = départ (fraction de la largeur).
+  // Ils passent DERRIÈRE le couple (sol plus haut, dessinés avant lui) : sinon ils traversent la robe et les chaussures.
   const WALKERS = [
-    { img: "img/web/chien-or.webp", cols: 3, rows: 3, paw: 0.0288, width: 0.46, stride: 1.25, speed: 1.7, y: 0.070, order: 3,   dir: -1, start: 1.15, rest: 0.22,
+    { img: "img/web/chien-or.webp", cols: 3, rows: 3, paw: 0.0288, width: 0.46, stride: 1.25, speed: 1.7, y: 0.150, order: 1.8, dir: -1, start: 1.15, rest: 0.22,
       // si la planche du chien doré manque, on retombe sur le chien aquarelle (img/art/chien-marche-sprite.webp)
       fallback: { img: "img/web/chien-marche.webp", cols: 4, rows: 3, paw: 0.0145, width: 0.32, stride: 0.8, speed: 1.0 } },
-    { img: "img/web/chat.webp",     cols: 3, rows: 3, paw: 0.0242, width: 0.30, stride: 0.80, speed: 0.5, y: 0.100, order: 1.5, dir:  1, start: -0.15, rest: 0.80 }
+    { img: "img/web/chat.webp",     cols: 3, rows: 3, paw: 0.0242, width: 0.30, stride: 0.80, speed: 0.5, y: 0.172, order: 1.6, dir:  1, start: -0.15, rest: 0.80 }
   ];
   function makeStage(canvas, onFail) {
     if (!window.THREE) return null;
