@@ -637,8 +637,8 @@ void main(){
   gl_FragColor = t;
 }`;
 
-/* Les animaux : planche de 9 images (cycle de course ou de marche sur place). La vitesse de lecture suit la distance
-   parcourue à l'écran, pour que les pattes ne « glissent » pas. */
+/* Les animaux : planche d'images (cycle de marche sur place). Un cycle de pattes dure `cycle` secondes ; la vitesse au sol
+   est déduite de la longueur de foulée, pour que les pattes ne « glissent » pas. */
 const DOG_FRAG = `
 uniform sampler2D uMap; uniform vec2 uGrid; uniform float uFrame; varying vec2 vUv;
 void main(){
@@ -730,13 +730,13 @@ function makeEngine() {
   // La scène « Main dans la main » : plage, couple qui danse, chien et chat qui se promènent, lucioles dorées
   const DANCE_COLS = 4, DANCE_ROWS = 3, DANCE_COUNT = 11, DANCE_FPS = 2.2, DANCE_SHOE = 0.0850;   // img/web/couple-danse.webp : 11 images, 2,2 par seconde (cycle ≈ 5 s)
   // Les promeneurs : planches de 9 images ; width = largeur à l'écran en fraction de la hauteur du couple ; stride = distance
-  // parcourue par cycle (en largeurs d'animal) ; speed = vitesse relative ; y = hauteur du sol ; start/rest = départ (fraction de la largeur).
+  // parcourue par cycle (en largeurs d'animal) ; cycle = durée d'un cycle complet de pattes en secondes (la vitesse au sol en découle : largeur × stride ÷ cycle) ; y = hauteur du sol ; start/rest = départ (fraction de la largeur).
   // Ils passent DERRIÈRE le couple (sol plus haut, dessinés avant lui) : sinon ils traversent la robe et les chaussures.
   const WALKERS = [
-    { img: "img/web/chien-or.webp", cols: 3, rows: 3, paw: 0.0288, width: 0.46, stride: 1.25, speed: 1.7, y: 0.150, order: 1.8, dir: -1, start: 1.15, rest: 0.22,
+    { img: "img/web/chien-or.webp", cols: 3, rows: 3, paw: 0.0288, width: 0.46, stride: 1.0, cycle: 1.4, y: 0.150, order: 1.8, dir: -1, start: 1.15, rest: 0.22,
       // si la planche du chien doré manque, on retombe sur le chien aquarelle (img/art/chien-marche-sprite.webp)
-      fallback: { img: "img/web/chien-marche.webp", cols: 4, rows: 3, paw: 0.0145, width: 0.32, stride: 0.8, speed: 1.0 } },
-    { img: "img/web/chat.webp",     cols: 3, rows: 3, paw: 0.0242, width: 0.30, stride: 0.80, speed: 0.5, y: 0.172, order: 1.6, dir:  1, start: -0.15, rest: 0.80 }
+      fallback: { img: "img/web/chien-marche.webp", cols: 4, rows: 3, paw: 0.0145, width: 0.32, stride: 0.8, cycle: 2.2 } },
+    { img: "img/web/chat.webp",     cols: 3, rows: 3, paw: 0.0242, width: 0.30, stride: 0.80, cycle: 3.0, y: 0.172, order: 1.6, dir:  1, start: -0.15, rest: 0.80 }
   ];
   function makeStage(canvas, onFail) {
     if (!window.THREE) return null;
@@ -791,7 +791,7 @@ function makeEngine() {
       }));
       motes.frustumCulled = false; motes.renderOrder = 4; scene.add(motes);
 
-      const st = { W: 1, H: 1, base: 60, placed: false };
+      const st = { W: 1, H: 1, placed: false };
       const s = { canvas, renderer, scene, camera, uniforms: U, visible: false, active: true, dirty: true, ready: false };
 
       new THREE.TextureLoader().load("img/web/couple-danse.webp", tex => {
@@ -827,10 +827,9 @@ function makeEngine() {
         couple.position.set(couple.userData.baseX, H * 0.125 + ch * (0.5 - DANCE_SHOE), 0);
         coupleShadow.scale.set(cw * 0.95, H * 0.045, 1);
         coupleShadow.position.set(couple.userData.baseX, H * 0.12, 0);
-        st.base = Math.min(Math.max(W * 0.11, 52), 100);
         for (const w of walkers) {
           w.dw = Math.max(ch * w.cfg.width, 84); w.dh = w.dw / w.aspect;
-          w.speed = st.base * w.cfg.speed;
+          w.speed = w.dw * w.cfg.stride / w.cfg.cycle;       // les pattes et le sol restent synchronisés : pas de glissade
           w.mesh.scale.set(w.dw * (w.dir < 0 ? -1 : 1), w.dh, 1);      // les planches regardent vers la droite
           w.mesh.position.y = H * w.cfg.y + w.dh * (0.5 - w.cfg.paw);
           w.shadow.scale.set(w.dw * 0.8, w.dh * 0.14, 1);
@@ -859,7 +858,7 @@ function makeEngine() {
             w.x += w.dir * w.speed * dt;
             if (w.dir < 0 && w.x < -w.dw * 0.7) { w.dir = 1; w.mesh.scale.x = w.dw; }
             else if (w.dir > 0 && w.x > st.W + w.dw * 0.7) { w.dir = -1; w.mesh.scale.x = -w.dw; }
-            w.mat.uniforms.uFrame.value += (w.speed * dt) / (w.dw * w.cfg.stride) * w.cfg.cols * w.cfg.rows;
+            w.mat.uniforms.uFrame.value += dt / w.cfg.cycle * w.cfg.cols * w.cfg.rows;
           }
           w.mesh.position.x = w.x; w.shadow.position.x = w.x;
         }
