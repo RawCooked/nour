@@ -543,20 +543,22 @@ void main(){
   gl_FragColor = vec4(col, 1.0);
 }`;
 
-/* Le couple : planche de 30 images (valse), lue en boucle.
+/* Le couple : balancement lent, 11 images calmes tirées de la planche et rangées en boucle ; deux images voisines
+   se fondent doucement l'une dans l'autre (elles se ressemblent, donc pas de dédoublement).
    La texture est pré-multipliée : pas de liseré sombre sur les bords de l'aquarelle. */
 const COUPLE_VERT = `
 varying vec2 vUv;
 void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`;
 const COUPLE_FRAG = `
-uniform sampler2D uMap; uniform vec2 uGrid; uniform float uFrame; varying vec2 vUv;
+uniform sampler2D uMap; uniform vec2 uGrid; uniform float uCount; uniform float uFrame; varying vec2 vUv;
 vec4 cell(float f){
-  f = mod(f, uGrid.x * uGrid.y);
+  f = mod(f, uCount);
   vec2 c = vec2(mod(f, uGrid.x), uGrid.y - 1.0 - floor(f / uGrid.x));
   return texture2D(uMap, (c + vUv) / uGrid);
 }
 void main(){
-  vec4 t = cell(floor(uFrame));   // images nettes, sans fondu (un fondu dédoublerait les visages)
+  float f0 = floor(uFrame);
+  vec4 t = mix(cell(f0), cell(f0 + 1.0), smoothstep(0.0, 1.0, fract(uFrame)));
   float warm = smoothstep(0.0, 1.0, vUv.x * 0.7 + vUv.y * 0.3);
   t.rgb *= mix(vec3(1.0), vec3(1.07, 0.95, 0.86), warm * 0.6);
   gl_FragColor = t;
@@ -653,7 +655,7 @@ function makeEngine() {
   }
 
   // La scène « Main dans la main » : plage, couple aquarelle, chien qui se promène, lucioles dorées
-  const DANCE_COLS = 6, DANCE_ROWS = 5, DANCE_FPS = 10, DANCE_SHOE = 0.0677;   // la planche img/web/couple-danse.webp : 30 images
+  const DANCE_COLS = 4, DANCE_ROWS = 3, DANCE_COUNT = 11, DANCE_FPS = 2.2, DANCE_SHOE = 0.0850;   // img/web/couple-danse.webp : 11 images, 2,2 par seconde (cycle ≈ 5 s)
   const DOG_COLS = 4, DOG_ROWS = 3, DOG_PAW = 0.0145, DOG_STRIDE = 0.8;       // img/web/chien-marche.webp : 12 images ; une foulée = 0,8 longueur de chien
   function makeStage(canvas, onFail) {
     if (!window.THREE) return null;
@@ -675,7 +677,7 @@ function makeEngine() {
       const coupleShadow = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), shadowMat(0.30)); coupleShadow.renderOrder = 1; scene.add(coupleShadow);
       const dogShadow = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), shadowMat(0.28)); dogShadow.renderOrder = 1; scene.add(dogShadow);
 
-      const coupleMat = new THREE.ShaderMaterial({ ...flat, uniforms: { uMap: { value: null }, uGrid: { value: new THREE.Vector2(6, 5) }, uFrame: { value: 0 } }, vertexShader: COUPLE_VERT, fragmentShader: COUPLE_FRAG });
+      const coupleMat = new THREE.ShaderMaterial({ ...flat, uniforms: { uMap: { value: null }, uGrid: { value: new THREE.Vector2(DANCE_COLS, DANCE_ROWS) }, uCount: { value: DANCE_COUNT }, uFrame: { value: 0 } }, vertexShader: COUPLE_VERT, fragmentShader: COUPLE_FRAG });
       const couple = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), coupleMat);
       couple.renderOrder = 2; couple.visible = false; scene.add(couple);
       let coupleAspect = 0.8;
@@ -732,7 +734,7 @@ function makeEngine() {
         renderer.getDrawingBufferSize(U.uRes.value);
         camera.left = 0; camera.right = W; camera.top = H; camera.bottom = 0; camera.updateProjectionMatrix();
         const narrow = W < 600;
-        const ch = H * (narrow ? 0.60 : 0.66), cw = ch * coupleAspect;
+        const ch = H * (narrow ? 0.54 : 0.62), cw = ch * coupleAspect;
         couple.scale.set(cw, ch, 1);
         couple.userData.baseX = W * (narrow ? 0.5 : 0.5);
         couple.position.set(couple.userData.baseX, H * 0.125 + ch * (0.5 - DANCE_SHOE), 0);

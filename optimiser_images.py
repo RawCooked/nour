@@ -89,7 +89,7 @@ if couple.exists():
 else:
     print("  manquant : img/bells/couple-maries.webp — la scène « Main dans la main » n'affichera pas le couple")
 
-print("\nCouple qui danse (planche de 30 images, 6 colonnes x 5 lignes) :")
+print("\nCouple qui danse (planche de 30 images, 6 colonnes x 5 lignes, 11 gardées) :")
 
 
 def runs(profile):
@@ -115,9 +115,37 @@ def agrandir(im, k):
     return Image.fromarray((np.clip(out, 0, 1) * 255).round().astype(np.uint8), "RGBA")
 
 
+# Les 30 images de la planche ne forment pas une animation continue (coiffure, visage et robe changent un peu
+# d'une image à l'autre) : jouées dans l'ordre, ça saute. On ne garde que les images « calmes » (balancement
+# lent), rangées dans l'ordre où elles se ressemblent le plus, et on les fond doucement dans le navigateur.
+DANSE_ORDRE = [0, 2, 1, 3, 5, 6, 28, 29, 24, 23, 4]
+DANSE_COLS, DANSE_ROWS = 4, 3
+
+
+def recaler(cells, ref, rayon=5):
+    """Décale chaque image de quelques pixels pour que le costume du marié (qui reste en place) coïncide avec la référence."""
+    def costume(im):
+        a = np.asarray(im).astype(np.float32)
+        return (a[..., 3] > 128) & (a[..., :3].mean(axis=2) < 95)
+    cible = costume(cells[ref])
+    out = []
+    for im in cells:
+        m = costume(im)
+        best, bs = (0, 0), None
+        for dy in range(-rayon, rayon + 1):
+            for dx in range(-rayon, rayon + 1):
+                sc = np.count_nonzero(np.roll(np.roll(m, dy, axis=0), dx, axis=1) ^ cible)
+                if bs is None or sc < bs:
+                    bs, best = sc, (dx, dy)
+        moved = Image.new("RGBA", im.size, (0, 0, 0, 0))
+        moved.paste(im, best)
+        out.append(moved)
+    return out
+
+
 def couple_danse(src, cols=6, rows=5):
-    """Découpe la planche (les couples sont séparés par du vide), puis cale chaque image sur les chaussures
-    du marié (il reste en place, c'est la mariée qui tourne) : les 30 images tiennent dans des cases identiques."""
+    """Découpe la planche (les couples sont séparés par du vide), cale chaque image sur les chaussures du marié
+    (il reste en place, c'est la mariée qui tourne), garde les images calmes et les range en boucle douce."""
     sheet = Image.open(src).convert("RGBA")
     alpha = np.asarray(sheet.getchannel("A")) > 10
     bands = runs(alpha.any(axis=1))
@@ -140,23 +168,28 @@ def couple_danse(src, cols=6, rows=5):
             foot = ys.max()
             ax = xs[ys > foot - 0.08 * im.height].mean()                    # pieds du marié
             frames.append((im, ax, foot))
+    frames = [frames[i] for i in DANSE_ORDRE]
     left = max(f[1] for f in frames)
     right = max(f[0].width - f[1] for f in frames)
     up = max(f[2] for f in frames)
     down = max(f[0].height - f[2] for f in frames)
-    pad = 6
+    pad = 10
     cw, ch = int(np.ceil(left + right)) + 2 * pad, int(np.ceil(up + down)) + 2 * pad
-    atlas = Image.new("RGBA", (cw * cols, ch * rows), (0, 0, 0, 0))
-    for i, (im, ax, foot) in enumerate(frames):
-        ox = (i % cols) * cw + pad + round(left - ax)
-        oy = (i // cols) * ch + pad + round(up - foot)
-        atlas.paste(im, (ox, oy))
+    cells = []
+    for im, ax, foot in frames:
+        c = Image.new("RGBA", (cw, ch), (0, 0, 0, 0))
+        c.paste(im, (pad + round(left - ax), pad + round(up - foot)))
+        cells.append(c)
+    cells = recaler(cells, ref=0)
+    atlas = Image.new("RGBA", (cw * DANSE_COLS, ch * DANSE_ROWS), (0, 0, 0, 0))
+    for i, c in enumerate(cells):
+        atlas.paste(c, ((i % DANSE_COLS) * cw, (i // DANSE_COLS) * ch))
     # La planche source est petite (~180 px par image) : on agrandit avec un filtre doux + un peu de netteté,
     # c'est plus propre que l'agrandissement brut du navigateur. Tout se fait en alpha pré-multiplié
     # (sinon le noir caché sous le transparent bave en liseré sombre sur les bords).
     atlas = agrandir(atlas, 2)
     cw, ch = cw * 2, ch * 2
-    save(atlas, "couple-danse", quality=78)
+    save(atlas, "couple-danse", quality=82)
     print(f"  {len(frames)} images de {cw}x{ch} px ; chaussures du marié à {(down * 2 + pad * 2) / ch:.4f} du bas de la case (DANCE_SHOE dans index.html)")
 
 
