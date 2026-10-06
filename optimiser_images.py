@@ -123,11 +123,13 @@ DANSE_COLS, DANSE_ROWS = 3, 3
 DANSE_ECHELLE = 1                      # planche source assez grande (~400 px par image) : pas d'agrandissement
 
 
-def recaler(cells, ref, rayon=5):
+def recaler(cells, ref, rayon=8):
     """Décale chaque image de quelques pixels pour que le costume du marié (qui reste en place) coïncide avec la référence."""
     def costume(im):
         a = np.asarray(im).astype(np.float32)
-        return (a[..., 3] > 128) & (a[..., :3].mean(axis=2) < 95)
+        m = (a[..., 3] > 128) & (a[..., :3].mean(axis=2) < 95)
+        m[: int(im.height * 0.62)] = False        # on ne garde que les jambes : elles ne bougent pas d'une image à l'autre
+        return m
     cible = costume(cells[ref])
     out = []
     for im in cells:
@@ -142,6 +144,16 @@ def recaler(cells, ref, rayon=5):
         moved.paste(im, best)
         out.append(moved)
     return out
+
+
+def redimensionner(im, facteur):
+    """Change l'échelle d'une image RGBA sans liseré sombre ou clair (calcul en alpha pré-multiplié)."""
+    a = np.asarray(im.convert("RGBA")).astype(np.float32) / 255
+    a[..., :3] *= a[..., 3:4]
+    w, h = max(1, round(im.width * facteur)), max(1, round(im.height * facteur))
+    big = np.asarray(Image.fromarray((a * 255).round().astype(np.uint8), "RGBA").resize((w, h), Image.LANCZOS)).astype(np.float32) / 255
+    big[..., :3] /= np.maximum(big[..., 3:4], 1e-4)
+    return Image.fromarray((np.clip(big, 0, 1) * 255).round().astype(np.uint8), "RGBA")
 
 
 def couple_danse(src, cols=3, rows=3):
@@ -170,6 +182,16 @@ def couple_danse(src, cols=3, rows=3):
             ax = xs[ys > foot - 0.08 * im.height].mean()                    # pieds du marié
             frames.append((im, ax, foot))
     frames = [frames[i] for i in DANSE_ORDRE]
+    # Hauteur du marié (cheveux -> chaussures), mesurée sur les pixels sombres autour de ses pieds
+    def hauteur_marie(im, ax):
+        a = np.asarray(im).astype(np.float32)
+        sombre = (a[..., 3] > 128) & (a[..., :3].mean(axis=2) < 95)
+        bande = sombre[:, max(0, int(ax - 0.16 * im.width)): int(ax + 0.16 * im.width)]
+        ys = np.nonzero(bande.any(axis=1))[0]
+        return ys.max() - ys.min()
+    hauteurs = [hauteur_marie(im, ax) for im, ax, foot in frames]
+    cible = float(np.median(hauteurs))
+    frames = [(redimensionner(im, cible / h), ax * cible / h, foot * cible / h) for (im, ax, foot), h in zip(frames, hauteurs)]
     left = max(f[1] for f in frames)
     right = max(f[0].width - f[1] for f in frames)
     up = max(f[2] for f in frames)
