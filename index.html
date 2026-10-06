@@ -728,15 +728,16 @@ function makeEngine() {
   }
 
   // La scène « Main dans la main » : plage, couple qui danse, chien et chat qui se promènent, lucioles dorées
-  const DANCE_COLS = 3, DANCE_ROWS = 3, DANCE_COUNT = 9, DANCE_FPS = 4, DANCE_SHOE = 0.0450;   // img/web/couple-danse.webp : 9 images (balancement, puis la mariée tourne), 4 par seconde (cycle ≈ 2,3 s)
+  const DANCE_COLS = 3, DANCE_ROWS = 3, DANCE_COUNT = 9, DANCE_FPS = 4, DANCE_SHOE = 0.0450, COUPLE_FEET = 0.16;   // img/web/couple-danse.webp : 9 images (balancement, puis la mariée tourne), 4 par seconde (cycle ≈ 2,3 s)
   // Les promeneurs : planches de 9 images ; width = largeur à l'écran en fraction de la hauteur du couple ; stride = distance
   // parcourue par cycle (en largeurs d'animal) ; cycle = durée d'un cycle complet de pattes en secondes (la vitesse au sol en découle : largeur × stride ÷ cycle) ; y = hauteur du sol ; start/rest = départ (fraction de la largeur).
-  // Ils passent DERRIÈRE le couple (sol plus haut, dessinés avant lui) : sinon ils traversent la robe et les chaussures.
+  // Ils marchent DEVANT le couple, dans un couloir au bas de la plage : leur taille est plafonnée pour que le haut de leur tête
+  // reste sous le bas de la robe. Ainsi ils ne passent jamais par-dessus le couple, et ils ne disparaissent jamais derrière lui.
   const WALKERS = [
-    { img: "img/web/chien-or.webp", cols: 3, rows: 3, paw: 0.0288, width: 0.46, stride: 1.0, cycle: 1.4, y: 0.150, order: 1.8, dir: -1, start: 1.15, rest: 0.22,
+    { img: "img/web/chien-or.webp", cols: 3, rows: 3, paw: 0.0288, width: 0.46, stride: 1.0, cycle: 1.4, y: 0.010, order: 3,   dir: -1, start: 0.80, rest: 0.22,
       // si la planche du chien doré manque, on retombe sur le chien aquarelle (img/art/chien-marche-sprite.webp)
       fallback: { img: "img/web/chien-marche.webp", cols: 4, rows: 3, paw: 0.0145, width: 0.32, stride: 0.8, cycle: 2.2 } },
-    { img: "img/web/chat.webp",     cols: 3, rows: 3, paw: 0.0242, width: 0.30, stride: 0.80, cycle: 3.0, y: 0.172, order: 1.6, dir:  1, start: -0.15, rest: 0.80 }
+    { img: "img/web/chat.webp",     cols: 3, rows: 3, paw: 0.0242, width: 0.30, stride: 0.50, cycle: 3.0, y: 0.035, order: 2.5, dir:  1, start: 0.15, rest: 0.80 }
   ];
   function makeStage(canvas, onFail) {
     if (!window.THREE) return null;
@@ -821,14 +822,17 @@ function makeEngine() {
         renderer.getDrawingBufferSize(U.uRes.value);
         camera.left = 0; camera.right = W; camera.top = H; camera.bottom = 0; camera.updateProjectionMatrix();
         const narrow = W < 600;
-        const ch = H * (narrow ? 0.54 : 0.62), cw = ch * coupleAspect;
+        const ch = H * (narrow ? 0.54 : 0.58), cw = ch * coupleAspect;
         couple.scale.set(cw, ch, 1);
         couple.userData.baseX = W * (narrow ? 0.5 : 0.5);
-        couple.position.set(couple.userData.baseX, H * 0.125 + ch * (0.5 - DANCE_SHOE), 0);
+        couple.position.set(couple.userData.baseX, H * COUPLE_FEET + ch * (0.5 - DANCE_SHOE), 0);
         coupleShadow.scale.set(cw * 0.95, H * 0.045, 1);
-        coupleShadow.position.set(couple.userData.baseX, H * 0.12, 0);
+        coupleShadow.position.set(couple.userData.baseX, H * (COUPLE_FEET - 0.005), 0);
         for (const w of walkers) {
+          // plafond : le haut de l'animal reste sous le bas de la robe (case du couple), avec 4 px de marge
+          const plafond = H * COUPLE_FEET - ch * DANCE_SHOE - 4 - H * w.cfg.y;
           w.dw = Math.max(ch * w.cfg.width, 84); w.dh = w.dw / w.aspect;
+          if (w.dh > plafond) { w.dh = Math.max(plafond, 30); w.dw = w.dh * w.aspect; }
           w.speed = w.dw * w.cfg.stride / w.cfg.cycle;       // les pattes et le sol restent synchronisés : pas de glissade
           w.mesh.scale.set(w.dw * (w.dir < 0 ? -1 : 1), w.dh, 1);      // les planches regardent vers la droite
           w.mesh.position.y = H * w.cfg.y + w.dh * (0.5 - w.cfg.paw);
@@ -846,7 +850,7 @@ function makeEngine() {
         // Les animaux ne sont placés qu'à la première image visible, avec la vraie largeur de la scène
         // (au montage, la page est encore masquée par v-cloak : la scène mesure 0 px).
         if (!st.placed && st.W > 50) {
-          for (const w of walkers) w.x = st.W * (reduced ? w.cfg.rest : w.cfg.start) + (reduced ? 0 : -w.dir * w.dw * 0.6);
+          for (const w of walkers) w.x = st.W * (reduced ? w.cfg.rest : w.cfg.start);   // visibles dès l'arrivée sur la scène
           st.placed = true;
         }
         if (!st.placed) return;
@@ -856,8 +860,8 @@ function makeEngine() {
         for (const w of walkers) {
           if (!reduced) {
             w.x += w.dir * w.speed * dt;
-            if (w.dir < 0 && w.x < -w.dw * 0.7) { w.dir = 1; w.mesh.scale.x = w.dw; }
-            else if (w.dir > 0 && w.x > st.W + w.dw * 0.7) { w.dir = -1; w.mesh.scale.x = -w.dw; }
+            if (w.dir < 0 && w.x < -w.dw * 0.55) { w.dir = 1; w.mesh.scale.x = w.dw; }        // demi-tour juste après la sortie : pas de longue absence
+            else if (w.dir > 0 && w.x > st.W + w.dw * 0.55) { w.dir = -1; w.mesh.scale.x = -w.dw; }
             w.mat.uniforms.uFrame.value += dt / w.cfg.cycle * w.cfg.cols * w.cfg.rows;
           }
           w.mesh.position.x = w.x; w.shadow.position.x = w.x;
