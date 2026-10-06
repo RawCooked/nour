@@ -1,14 +1,22 @@
+<!doctype html>
+<html lang="fr">
+<head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Nour &amp; Aissam</title>
 <meta name="description" content="Invitation au mariage de Nour et Aissam — dimanche 18 octobre 2026">
+<meta name="theme-color" content="#fbf7f1">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Nour &amp; Aissam — Invitation au mariage">
+<meta property="og:description" content="Dimanche 18 octobre 2026 à 19h30. Touchez le sceau pour ouvrir l’invitation.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='29' fill='%23fbf7f1' stroke='%23b08d57' stroke-width='3'/%3E%3Ctext x='32' y='41' font-family='Georgia,serif' font-style='italic' font-size='26' text-anchor='middle' fill='%231c3344'%3ENA%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;1,6..96,400&family=Jost:wght@300;400&display=swap">
 <style>
   /* Concept « finesse » : ivoire, encre bleu nuit, filets dorés, une seule touche corail.
-     La mer au coucher du soleil est une scène three.js (shader) vue à travers une arche.
-     Look unique et assumé : pas de thème sombre séparé. */
+     La mer au coucher du soleil est une scène three.js (shader) vue à travers une arche ;
+     la page est pilotée par Vue 3 (sans étape de build). */
   :root {
     --ivory: #fbf7f1;
     --sand: #f2e6d8;
@@ -23,12 +31,13 @@
   }
 
   * { box-sizing: border-box; }
-  [hidden] { display: none !important; }
+  [hidden], [v-cloak] { display: none !important; }
   html { -webkit-text-size-adjust: 100%; }
   body { margin: 0; background: var(--ivory); color: var(--ink); font-family: var(--font-body); font-weight: 300; font-size: 1.05rem; line-height: 1.65; overflow-x: hidden; }
   img { max-width: 100%; height: auto; display: block; }
+  a { color: inherit; }
 
-  .caps { font-size: .68rem; font-weight: 400; letter-spacing: .38em; text-transform: uppercase; color: var(--muted); }
+  .caps { font-size: .72rem; font-weight: 400; letter-spacing: .36em; text-transform: uppercase; color: var(--muted); }
   .rule { width: 48px; height: 1px; background: var(--gold); opacity: .8; }
 
   /* Dessins du pack en masque, recolorés */
@@ -94,14 +103,14 @@
   /* =============== ÉCRAN 1 : L'ENVELOPPE =============== */
   .cover { position: fixed; inset: 0; z-index: 10; overflow: hidden; display: grid; place-items: center; transition: opacity 1.1s ease, visibility 1.1s; }
   .cover.is-gone { opacity: 0; visibility: hidden; }
-  .cover-veil { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(251,247,241,.0) 0%, rgba(251,247,241,.0) 50%, rgba(28,51,68,.25) 100%); }
+  .cover-veil { position: absolute; inset: 0; background: linear-gradient(180deg, rgba(251,247,241,.0) 0%, rgba(251,247,241,.0) 50%, rgba(28,51,68,.32) 100%); }
   .cover-inner { position: relative; z-index: 2; display: grid; justify-items: center; gap: 28px; padding: 24px 16px; text-align: center; }
   .cover-inner .caps { color: var(--ink); }
   .cover-names { margin: -14px 0 0; font-family: var(--font-display); font-style: italic; font-size: 1.9rem; color: var(--ink); }
   .cover-guest { margin: -18px 0 0; font-family: var(--font-display); font-style: italic; font-size: 1.05rem; color: var(--ink); }
   .cover .lune { position: absolute; z-index: 2; width: min(12vw, 56px); top: 9%; right: 12%; --c: #fffaf1; }
-  .cover-hint { margin: 0; color: #fffaf1; letter-spacing: .32em; text-shadow: 0 1px 8px rgba(28,51,68,.4); animation: breathe 2.8s ease-in-out infinite; transition: opacity .3s; }
-  @keyframes breathe { 50% { opacity: .45; } }
+  .cover-inner .cover-hint { margin: 0; color: #fffaf1; letter-spacing: .32em; text-shadow: 0 1px 10px rgba(28,51,68,.7), 0 0 2px rgba(28,51,68,.6); animation: breathe 2.8s ease-in-out infinite; transition: opacity .3s; }
+  @keyframes breathe { 50% { opacity: .55; } }
 
   .env { position: relative; width: min(80vw, 330px); aspect-ratio: 1.45; perspective: 1600px; cursor: pointer; transition: transform 1.2s cubic-bezier(.65,0,.35,1); }
   .env-shadow { position: absolute; inset: 0; box-shadow: 0 30px 60px rgba(28, 51, 68, .3); }
@@ -120,7 +129,7 @@
           box-shadow: 0 6px 14px rgba(110, 50, 30, .35), inset 0 0 0 5px rgba(255, 238, 220, .18);
           font-family: var(--font-display); font-style: italic; font-size: 1.2rem; color: #fbefe2; transition: transform .7s cubic-bezier(.5,0,.3,1), opacity .5s; }
   .seal:hover { transform: translate(-50%, -50%) scale(1.06); }
-  .seal:focus-visible { outline: 1px solid var(--ivory); outline-offset: 6px; }
+  .seal:focus-visible { outline: 2px solid var(--ivory); outline-offset: 6px; }
   .env .rest { z-index: 7; }
 
   .cover.s1 .seal { transform: translate(-50%, -50%) scale(.6); opacity: 0; pointer-events: none; }
@@ -135,10 +144,11 @@
   @keyframes spark { 0% { transform: translate(-50%, -50%) scale(.2); opacity: 1; } 100% { transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1) rotate(var(--rot)); opacity: 0; } }
 
   /* =============== ÉCRAN 2 : LE SITE =============== */
-  .music { position: fixed; z-index: 7; right: 16px; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--gold); background: rgba(251,247,241,.92); color: var(--ink); cursor: pointer; display: grid; place-items: center; }
+  .music { position: fixed; z-index: 13; right: 18px; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--gold); background: rgba(251,247,241,.94); color: var(--ink); cursor: pointer; display: grid; place-items: center; }
+  .music:focus-visible, .btn:focus-visible, .scroll-cue:focus-visible { outline: 2px solid var(--coral); outline-offset: 4px; }
   .music svg { width: 18px; height: 18px; }
 
-  .hero { position: relative; overflow: hidden; display: grid; grid-template-columns: 1fr; justify-items: center; align-items: center; gap: 44px; padding: 72px 16px 88px; }
+  .hero { position: relative; overflow: hidden; display: grid; grid-template-columns: 1fr; justify-items: center; align-items: center; gap: 44px; padding: 72px 16px clamp(56px, 12vw, 88px); }
   @media (min-width: 900px) {
     .hero { grid-template-columns: repeat(2, minmax(0, 1fr)); min-height: 100svh; padding: 64px clamp(32px, 6vw, 120px); gap: 48px; }
     .hero-text { justify-items: start !important; text-align: left !important; }
@@ -155,14 +165,14 @@
   .arch-wrap .keystar svg { width: 100%; height: 100%; display: block; }
 
   .hero-text { position: relative; z-index: 3; display: grid; justify-items: center; text-align: center; gap: 14px; }
-  .names { margin: 0; font-family: var(--font-display); font-style: italic; font-weight: 400; font-size: clamp(3.4rem, 13vw, 7rem); line-height: .98; letter-spacing: -.015em; color: var(--ink); }
+  .names { margin: 0; font-family: var(--font-display); font-style: italic; font-weight: 400; font-size: clamp(3.4rem, 13vw, 7rem); line-height: .98; letter-spacing: -.015em; color: var(--ink); text-wrap: balance; }
   .names .amp { display: block; font-size: .5em; color: var(--coral); line-height: 1.2; }
-  .invite-line { margin: 6px 0 0; font-size: 1.1rem; max-width: 30ch; }
+  .invite-line { margin: 6px 0 0; font-size: 1.1rem; max-width: 30ch; text-wrap: balance; }
   .when { margin: 4px 0 0; font-size: .78rem; font-weight: 400; letter-spacing: .28em; text-transform: uppercase; line-height: 2.1; }
   .scroll-cue { margin-top: 12px; text-decoration: none; display: grid; justify-items: center; gap: 8px; }
   .scroll-cue::after { content: ""; width: 1px; height: 34px; background: linear-gradient(var(--ink), transparent); opacity: .5; }
 
-  .section { position: relative; padding: 88px 16px; display: grid; justify-items: center; gap: 26px; text-align: center; overflow: hidden; }
+  .section { position: relative; padding: clamp(56px, 12vw, 88px) 16px; display: grid; justify-items: center; gap: 26px; text-align: center; overflow: hidden; }
   .section + .section { padding-top: 24px; }
   :is(.section, .closing) > :not(.deco):not(.rest) { position: relative; z-index: 2; }
   .section h2 { margin: 0; font-family: var(--font-display); font-style: italic; font-weight: 400; font-size: clamp(2rem, 6vw, 2.8rem); line-height: 1.15; }
@@ -174,10 +184,10 @@
   .verse .ar { margin: 0; font-family: var(--font-ar); font-size: clamp(1.35rem, 4.6vw, 1.75rem); line-height: 2; }
   .verse .fr { margin: 0; font-family: var(--font-display); font-style: italic; font-size: 1.02rem; line-height: 1.7; max-width: 42ch; }
 
-  .countdown { width: min(100%, 520px); display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .countdown { width: min(100%, 520px); display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); padding: 22px 0 18px; border-top: 1px solid rgba(176,141,87,.6); border-bottom: 1px solid rgba(176,141,87,.6); }
   .countdown > div { display: grid; justify-items: center; gap: 4px; }
   .countdown > div + div { border-left: 1px solid rgba(176,141,87,.6); }
-  .countdown strong { font-family: var(--font-display); font-weight: 400; font-size: clamp(2.1rem, 9vw, 3.2rem); line-height: 1; font-variant-numeric: tabular-nums lining-nums; transition: opacity .3s; }
+  .countdown strong { font-family: var(--font-display); font-weight: 400; font-size: clamp(2.4rem, 11vw, 3.7rem); line-height: 1; font-variant-numeric: tabular-nums lining-nums; }
   .countdown-done { margin: 0; font-family: var(--font-display); font-style: italic; font-size: 2.2rem; }
 
   .place { width: min(100%, 460px); display: grid; justify-items: center; gap: 8px; padding: 36px 24px; border-top: 1px solid rgba(176,141,87,.6); border-bottom: 1px solid rgba(176,141,87,.6); }
@@ -185,10 +195,9 @@
   .place .venue { margin: 6px 0 0; font-family: var(--font-display); font-size: 1.35rem; }
   .place .addr { margin: 0; color: var(--muted); }
   .btns { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; margin-top: 14px; }
-  .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 46px; padding: 0 24px; border: 1px solid var(--ink); color: var(--ink); text-decoration: none; font-size: .7rem; font-weight: 400; letter-spacing: .26em; text-transform: uppercase; transition: background .25s, color .25s; }
+  .btn { display: inline-flex; align-items: center; justify-content: center; min-height: 48px; padding: 0 24px; border: 1px solid var(--ink); color: var(--ink); text-decoration: none; font-size: .72rem; font-weight: 400; letter-spacing: .26em; text-transform: uppercase; transition: background .25s, color .25s; }
   .btn.solid, .btn:hover { background: var(--ink); color: var(--ivory); }
   .btn.solid:hover { background: transparent; color: var(--ink); }
-  .btn:focus-visible { outline: 1px solid var(--coral); outline-offset: 4px; }
 
   .timeline { list-style: none; margin: 0; padding: 0; width: min(100%, 460px); }
   .timeline li { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; padding: 16px 2px; border-bottom: 1px solid rgba(176,141,87,.5); }
@@ -196,9 +205,21 @@
   .timeline .t { font-family: var(--font-display); font-size: 1.3rem; font-variant-numeric: tabular-nums lining-nums; }
   .timeline .what { text-align: right; }
 
-  .closing { position: relative; padding: 64px 16px 120px; display: grid; justify-items: center; gap: 14px; text-align: center; overflow: hidden; }
-  .closing .s { margin: 0; font-family: var(--font-display); font-style: italic; font-size: clamp(1.4rem, 4.6vw, 1.9rem); line-height: 1.4; max-width: 22ch; }
+  /* ---- Scène « Main dans la main » : plage au coucher du soleil, couple aquarelle, chien qui se promène (three.js) ---- */
+  .stage { position: relative; height: min(100svh, 800px); min-height: 540px; margin-top: 8px; overflow: hidden; }
+  .stage::before { content: ""; position: absolute; inset: 0 0 auto; height: 22%; z-index: 2; pointer-events: none; background: linear-gradient(var(--ivory), rgba(251,247,241,0)); }
+  .stage-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .stage-fallback { position: absolute; inset: 0; background: linear-gradient(180deg, #efe1d6 0%, #f6cfb2 38%, #f0a07e 52%, #2e5e78 56%, #5d7f93 80%, #f2e6d8 84%, var(--ivory) 100%); }
+  .stage-fallback img { position: absolute; left: 50%; bottom: 9%; height: 62%; width: auto; transform: translateX(-50%); }
+  .stage-text { position: absolute; z-index: 3; top: 11%; left: 0; right: 0; display: grid; justify-items: center; gap: 6px; padding: 0 16px; text-align: center; pointer-events: none; }
+  .stage-text .caps { color: var(--ink); text-shadow: 0 0 14px rgba(251,247,241,.9); }
+  .stage-line { margin: 0; font-family: var(--font-display); font-style: italic; font-weight: 400; font-size: clamp(1.9rem, 6.4vw, 3rem); line-height: 1.15; color: var(--ink); text-shadow: 0 0 24px rgba(251,247,241,.85), 0 0 8px rgba(251,247,241,.6); text-wrap: balance; }
+
+  .closing { position: relative; padding: 64px 16px 56px; display: grid; justify-items: center; gap: 14px; text-align: center; overflow: hidden; }
+  .closing .s { margin: 0; font-family: var(--font-display); font-style: italic; font-size: clamp(1.4rem, 4.6vw, 1.9rem); line-height: 1.4; max-width: 22ch; text-wrap: balance; }
   .closing .filante { width: 54px; --c: var(--coral); }
+  .credit { margin: 0; padding: 8px 16px calc(52px + env(safe-area-inset-bottom, 0px)); text-align: center; font-size: .7rem; letter-spacing: .08em; color: var(--muted); }
+  .credit a { text-underline-offset: 3px; }
 
   .site.enter :is(.arch-wrap, .hero-text) { animation: rise 1.4s cubic-bezier(.2,.8,.2,1) both; }
   .site.enter .hero-text { animation-delay: .25s; }
@@ -212,142 +233,171 @@
     .fly { display: none; }
   }
 </style>
+</head>
+<body>
 
-<svg width="0" height="0" style="position:absolute" aria-hidden="true">
-  <symbol id="star" viewBox="0 0 24 24"><path fill="currentColor" d="M12 0c.6 6.4 5.6 11.4 12 12-6.4.6-11.4 5.6-12 12-.6-6.4-5.6-11.4-12-12C6.4 11.4 11.4 6.4 12 0Z"/></symbol>
-</svg>
-<div class="frame" aria-hidden="true"></div>
-<canvas class="dust" id="dust" aria-hidden="true"></canvas>
+<noscript>
+  <style>[v-cloak] { display: block !important; } .js .reveal { opacity: 1; transform: none; }</style>
+  <main style="max-width:32rem;margin:15vh auto;padding:0 20px;text-align:center;font-family:Georgia,serif;color:#1c3344">
+    <h1 style="font-style:italic;font-weight:400;font-size:2.6rem;margin:0">Nour &amp; Aissam</h1>
+    <p>ont la joie de vous inviter à célébrer leur mariage</p>
+    <p><strong>Dimanche 18 octobre 2026 à 19h30</strong></p>
+    <p>Activez JavaScript pour découvrir l’invitation complète.</p>
+  </main>
+</noscript>
 
-<!-- ============ ENVELOPPE ============ -->
-<div class="cover" id="cover">
-  <div class="sea-fallback"></div>
-  <canvas class="sea" id="seaCover" aria-hidden="true"></canvas>
-  <div class="cover-veil"></div>
-  <span class="ink lune" aria-hidden="true"></span>
-  <div class="fly" style="--path:path-a;--dur:22s;--w:30px" aria-hidden="true"><span class="ink wing pap-a" style="--c:#fffaf1"></span></div>
-  <div class="fly" style="--path:path-b;--dur:28s;--delay:-10s;--w:26px" aria-hidden="true"><span class="ink wing pap-b" style="--c:var(--coral)"></span></div>
+<div id="app" v-cloak>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="star" viewBox="0 0 24 24"><path fill="currentColor" d="M12 0c.6 6.4 5.6 11.4 12 12-6.4.6-11.4 5.6-12 12-.6-6.4-5.6-11.4-12-12C6.4 11.4 11.4 6.4 12 0Z"/></symbol>
+  </svg>
+  <div class="frame" aria-hidden="true"></div>
+  <canvas class="dust" id="dust" aria-hidden="true"></canvas>
 
-  <span class="ink lf9 deco sway" style="width:min(30vw,170px);left:-4%;bottom:6%;--c:#fffaf1;--r:12deg;opacity:.55" aria-hidden="true"></span>
-  <span class="ink lf10 deco sway" style="width:min(24vw,140px);right:-3%;top:22%;--c:#fffaf1;--r:-20deg;--t:8s;opacity:.5" aria-hidden="true"></span>
-  <div class="cover-inner">
-    <div class="crest" aria-hidden="true"><span class="ink lf6 l" style="--c:var(--ink)"></span><span class="mono">N<i>&amp;</i>A</span><span class="ink lf6 r" style="--c:var(--ink)"></span></div>
-    <span class="caps">Vous êtes invités</span>
-    <p class="cover-names" data-couple></p>
-    <p class="cover-guest" id="coverGuest" hidden></p>
-    <div class="env" id="env">
-      <div class="env-shadow"></div>
-      <div class="env-back"></div>
-      <div class="env-card" aria-hidden="true">
-        <span class="caps">Save the date</span>
-        <span class="n" data-couple></span>
+  <!-- ============ ENVELOPPE ============ -->
+  <div v-if="!gone" id="cover" class="cover" :class="{ s1: step >= 1, s2: step >= 2, s3: step >= 3, s4: step >= 4, 'is-gone': fading }">
+    <div class="sea-fallback"></div>
+    <canvas class="sea" id="seaCover" aria-hidden="true"></canvas>
+    <div class="cover-veil"></div>
+    <span class="ink lune" aria-hidden="true"></span>
+    <div class="fly" style="--path:path-a;--dur:22s;--w:30px" aria-hidden="true"><span class="ink wing pap-a" style="--c:#fffaf1"></span></div>
+    <div class="fly" style="--path:path-b;--dur:28s;--delay:-10s;--w:26px" aria-hidden="true"><span class="ink wing pap-b" style="--c:var(--coral)"></span></div>
+
+    <span class="ink lf9 deco sway" style="width:min(30vw,170px);left:-4%;bottom:6%;--c:#fffaf1;--r:12deg;opacity:.55" aria-hidden="true"></span>
+    <span class="ink lf10 deco sway" style="width:min(24vw,140px);right:-3%;top:22%;--c:#fffaf1;--r:-20deg;--t:8s;opacity:.5" aria-hidden="true"></span>
+    <div class="cover-inner">
+      <div class="crest" aria-hidden="true"><span class="ink lf6 l" style="--c:var(--ink)"></span><span class="mono">N<i>&amp;</i>A</span><span class="ink lf6 r" style="--c:var(--ink)"></span></div>
+      <span class="caps">Vous êtes invités</span>
+      <p class="cover-names">{{ couple }}</p>
+      <p class="cover-guest" v-if="guest">Pour {{ guest }}</p>
+      <div class="env" id="env" @click="open">
+        <div class="env-shadow"></div>
+        <div class="env-back"></div>
+        <div class="env-card" aria-hidden="true">
+          <span class="caps">Save the date</span>
+          <span class="n">{{ couple }}</span>
+        </div>
+        <div class="env-front"></div>
+        <div class="env-flap"></div>
+        <div class="rest" style="--w:30px;right:10%;top:-14px" aria-hidden="true"><span class="ink wing pap-a" style="--c:var(--gold)"></span></div>
+        <button class="seal" id="seal" type="button" aria-label="Ouvrir l'invitation">{{ C.bride[0] }} {{ C.groom[0] }}</button>
       </div>
-      <div class="env-front"></div>
-      <div class="env-flap"></div>
-      <div class="rest" style="--w:30px;right:10%;top:-14px" aria-hidden="true"><span class="ink wing pap-a" style="--c:var(--gold)"></span></div>
-      <button class="seal" id="seal" type="button" aria-label="Ouvrir l'invitation" data-initials></button>
+      <p class="caps cover-hint">Touchez le sceau</p>
     </div>
-    <p class="caps cover-hint">Touchez le sceau</p>
   </div>
-</div>
 
-<!-- ============ LE SITE ============ -->
-<div class="site idle" id="site">
-  <button class="music" id="music" type="button" aria-label="Couper la musique" hidden>
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg>
-  </button>
+  <!-- ============ LE SITE ============ -->
+  <div class="site" :class="siteState" id="site">
+    <button class="music" type="button" v-show="musicShown" :aria-label="musicOn ? 'Couper la musique' : 'Lancer la musique'" :style="{ opacity: musicOn ? 1 : .55 }" @click="toggleMusic">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg>
+    </button>
 
-  <header class="hero">
-    <div class="fly" style="--path:path-a;--dur:26s;--w:32px" aria-hidden="true"><span class="ink wing pap-a" style="--c:var(--gold)"></span></div>
-    <div class="fly" style="--path:path-b;--dur:32s;--delay:-12s;--w:26px" aria-hidden="true"><span class="ink wing pap-b" style="--c:var(--coral)"></span></div>
+    <header class="hero">
+      <div class="fly" style="--path:path-a;--dur:26s;--w:32px" aria-hidden="true"><span class="ink wing pap-a" style="--c:var(--gold)"></span></div>
+      <div class="fly" style="--path:path-b;--dur:32s;--delay:-12s;--w:26px" aria-hidden="true"><span class="ink wing pap-b" style="--c:var(--coral)"></span></div>
 
-    <div class="arch-wrap" id="archWrap">
-      <span class="ink lune" aria-hidden="true"></span>
-      <div class="arch" id="arch">
-        <div class="sea-fallback"></div>
-        <canvas class="sea" id="seaHero" aria-hidden="true"></canvas>
+      <div class="arch-wrap" id="archWrap">
+        <span class="ink lune" aria-hidden="true"></span>
+        <div class="arch" id="arch">
+          <div class="sea-fallback"></div>
+          <canvas class="sea" id="seaHero" role="img" aria-label="La mer au coucher du soleil"></canvas>
+        </div>
+        <span class="arch-line" aria-hidden="true"></span>
+        <span class="arch-line outer" aria-hidden="true"></span>
+        <span class="keystar" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#star"/></svg></span>
+        <span class="ink lf9 base l sway" style="--r:-6deg" aria-hidden="true"></span>
+        <span class="ink lf9 base r sway" style="--r:6deg;--t:8s" aria-hidden="true"></span>
+        <div class="rest" style="--w:34px;left:-28px;top:42%" aria-hidden="true"><span class="ink wing pap-a" style="--c:var(--gold)"></span></div>
+        <div class="rest" style="--w:24px;right:-22px;top:20%;--delay:-1.6s" aria-hidden="true"><span class="ink wing pap-b" style="--c:var(--coral)"></span></div>
       </div>
-      <span class="arch-line" aria-hidden="true"></span>
-      <span class="arch-line outer" aria-hidden="true"></span>
-      <span class="keystar" aria-hidden="true"><svg viewBox="0 0 24 24"><use href="#star"/></svg></span>
-      <span class="ink lf9 base l sway" style="--r:-6deg" aria-hidden="true"></span>
-      <span class="ink lf9 base r sway" style="--r:6deg;--t:8s" aria-hidden="true"></span>
-      <div class="rest" style="--w:34px;left:-28px;top:42%" aria-hidden="true"><span class="ink wing pap-a" style="--c:var(--gold)"></span></div>
-      <div class="rest" style="--w:24px;right:-22px;top:20%;--delay:-1.6s" aria-hidden="true"><span class="ink wing pap-b" style="--c:var(--coral)"></span></div>
-    </div>
 
-    <div class="hero-text">
-      <div class="crest" aria-hidden="true"><span class="ink lf6 l"></span><span class="mono">N<i>&amp;</i>A</span><span class="ink lf6 r"></span></div>
-      <span class="caps">Save the date</span>
-      <h1 class="names"><span data-field="bride"></span><span class="amp">&amp;</span><span data-field="groom"></span></h1>
+      <div class="hero-text">
+        <div class="crest" aria-hidden="true"><span class="ink lf6 l"></span><span class="mono">N<i>&amp;</i>A</span><span class="ink lf6 r"></span></div>
+        <span class="caps">Save the date</span>
+        <h1 class="names"><span>{{ C.bride }}</span><span class="amp">&amp;</span><span>{{ C.groom }}</span></h1>
+        <div class="orn" aria-hidden="true"><i></i><span class="ink pap-a"></span><i></i></div>
+        <p class="invite-line">{{ C.inviteLine }}</p>
+        <p class="when">{{ longDate }}<br>{{ hhmm }} · {{ C.venue }}</p>
+        <a class="scroll-cue caps" href="#lieu">Découvrir</a>
+      </div>
+    </header>
+
+    <section class="section" v-reveal aria-label="Verset">
+      <span class="ink lf10 deco sway" style="width:min(22vw,120px);left:2%;top:30%;--r:20deg" aria-hidden="true"></span>
+      <span class="ink lf3 deco sway" style="width:min(24vw,130px);right:0;bottom:12%;--r:-150deg;--t:8s" aria-hidden="true"></span>
+      <div class="verse">
+        <span class="ink lune" aria-hidden="true"></span>
+        <p class="ar" lang="ar" dir="rtl">وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَاجًا لِّتَسْكُنُوا إِلَيْهَا وَجَعَلَ بَيْنَكُم مَّوَدَّةً وَرَحْمَةً</p>
+        <p class="fr">« Et parmi Ses signes, Il a créé pour vous des épouses afin que vous trouviez auprès d’elles la quiétude, et Il a mis entre vous de l’affection et de la bonté. »</p>
+        <span class="caps">Ar-Rûm · 30:21</span>
+      </div>
+    </section>
+
+    <section class="section" v-reveal aria-labelledby="h-count">
+      <div class="orn" aria-hidden="true"><i></i><span class="ink pap-b"></span><i></i></div>
+      <span class="caps" id="h-count">Le grand jour dans</span>
+      <div class="countdown" v-if="!left.done" role="group" :aria-label="'Compte à rebours : ' + left.d + ' jours, ' + left.h + ' heures'">
+        <div><strong>{{ left.d }}</strong><span class="caps">jours</span></div>
+        <div><strong>{{ left.h }}</strong><span class="caps">heures</span></div>
+        <div><strong>{{ left.m }}</strong><span class="caps">min</span></div>
+        <div><strong>{{ left.s }}</strong><span class="caps">sec</span></div>
+      </div>
+      <p class="countdown-done" v-else>C’est aujourd’hui</p>
+    </section>
+
+    <section class="section" v-reveal id="lieu" aria-labelledby="h-lieu">
+      <div class="rest" style="--w:30px;right:12%;top:60px" aria-hidden="true"><span class="ink wing pap-a" style="--c:var(--gold)"></span></div>
+      <span class="ink lf9 deco sway" style="width:min(20vw,110px);left:1%;top:38%;--r:16deg" aria-hidden="true"></span>
       <div class="orn" aria-hidden="true"><i></i><span class="ink pap-a"></span><i></i></div>
-      <p class="invite-line" data-field="inviteLine"></p>
-      <p class="when" id="heroWhen"></p>
-      <a class="scroll-cue caps" href="#lieu">Découvrir</a>
-    </div>
-  </header>
-
-  <section class="section reveal" aria-label="Verset">
-    <span class="ink lf10 deco sway" style="width:min(22vw,120px);left:2%;top:30%;--r:20deg" aria-hidden="true"></span>
-    <span class="ink lf3 deco sway" style="width:min(24vw,130px);right:0;bottom:12%;--r:-150deg;--t:8s" aria-hidden="true"></span>
-    <div class="verse">
-      <span class="ink lune" aria-hidden="true"></span>
-      <p class="ar" lang="ar" dir="rtl">وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَاجًا لِّتَسْكُنُوا إِلَيْهَا وَجَعَلَ بَيْنَكُم مَّوَدَّةً وَرَحْمَةً</p>
-      <p class="fr">« Et parmi Ses signes, Il a créé pour vous des épouses afin que vous trouviez auprès d’elles la quiétude, et Il a mis entre vous de l’affection et de la bonté. »</p>
-      <span class="caps">Ar-Rûm · 30:21</span>
-    </div>
-  </section>
-
-  <section class="section reveal" aria-labelledby="h-count">
-    <div class="orn" aria-hidden="true"><i></i><span class="ink pap-b"></span><i></i></div>
-    <span class="caps" id="h-count">Le grand jour dans</span>
-    <div class="countdown" id="countdown">
-      <div><strong id="cd-d">0</strong><span class="caps">jours</span></div>
-      <div><strong id="cd-h">00</strong><span class="caps">heures</span></div>
-      <div><strong id="cd-m">00</strong><span class="caps">min</span></div>
-      <div><strong id="cd-s">00</strong><span class="caps">sec</span></div>
-    </div>
-  </section>
-
-  <section class="section reveal" id="lieu" aria-labelledby="h-lieu">
-    <div class="rest" style="--w:30px;right:12%;top:60px" aria-hidden="true"><span class="ink wing pap-a" style="--c:var(--gold)"></span></div>
-    <span class="ink lf9 deco sway" style="width:min(20vw,110px);left:1%;top:38%;--r:16deg" aria-hidden="true"></span>
-    <div class="orn" aria-hidden="true"><i></i><span class="ink pap-a"></span><i></i></div>
-    <span class="caps">Où &amp; quand</span>
-    <h2 id="h-lieu">La soirée</h2>
-    <div class="place">
-      <p class="when" id="placeWhen"></p>
-      <p class="venue" data-field="venue"></p>
-      <p class="addr" data-field="address"></p>
-      <div class="btns">
-        <a class="btn" id="mapsBtn" target="_blank" rel="noopener">Itinéraire</a>
-        <a class="btn solid" id="calBtn" target="_blank" rel="noopener">Agenda</a>
+      <span class="caps">Où &amp; quand</span>
+      <h2 id="h-lieu">La soirée</h2>
+      <div class="place">
+        <p class="when">{{ longDate }}<br>{{ hhmm }}</p>
+        <p class="venue">{{ C.venue }}</p>
+        <p class="addr">{{ C.address }}</p>
+        <div class="btns">
+          <a class="btn" :href="C.maps" target="_blank" rel="noopener">Itinéraire</a>
+          <a class="btn solid" :href="calHref" target="_blank" rel="noopener">Agenda</a>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  <section class="section reveal" id="programme" aria-labelledby="h-prog">
-    <div class="rest" style="--w:26px;left:12%;top:70px;--delay:-2s" aria-hidden="true"><span class="ink wing pap-b" style="--c:var(--coral)"></span></div>
-    <span class="ink lf10 deco sway" style="width:min(20vw,110px);right:1%;top:44%;--r:-24deg;--t:8s" aria-hidden="true"></span>
-    <div class="orn" aria-hidden="true"><i></i><span class="ink lune" style="width:16px"></span><i></i></div>
-    <span class="caps">Le déroulé</span>
-    <h2 id="h-prog">Programme</h2>
-    <ol class="timeline" id="timeline"></ol>
-  </section>
+    <section class="section" v-reveal id="programme" aria-labelledby="h-prog" v-if="C.programme.length">
+      <div class="rest" style="--w:26px;left:12%;top:70px;--delay:-2s" aria-hidden="true"><span class="ink wing pap-b" style="--c:var(--coral)"></span></div>
+      <span class="ink lf10 deco sway" style="width:min(20vw,110px);right:1%;top:44%;--r:-24deg;--t:8s" aria-hidden="true"></span>
+      <div class="orn" aria-hidden="true"><i></i><span class="ink lune" style="width:16px"></span><i></i></div>
+      <span class="caps">Le déroulé</span>
+      <h2 id="h-prog">Programme</h2>
+      <ol class="timeline">
+        <li v-for="step in C.programme" :key="step.time"><span class="t">{{ step.time }}</span><span class="what">{{ step.what }}</span></li>
+      </ol>
+    </section>
 
-  <footer class="closing reveal">
-    <span class="ink lf9 deco sway" style="width:min(22vw,120px);left:3%;bottom:10%;--r:10deg" aria-hidden="true"></span>
-    <span class="ink lf9 deco sway" style="width:min(22vw,120px);right:3%;bottom:10%;--r:-10deg;transform:scaleX(-1);--t:8s" aria-hidden="true"></span>
-    <span class="ink filante" aria-hidden="true"></span>
-    <p class="s" data-field="closing"></p>
-    <div class="crest" aria-hidden="true"><span class="ink lf6 l"></span><span class="mono">N<i>&amp;</i>A</span><span class="ink lf6 r"></span></div>
-    <span class="caps" id="footDate"></span>
-  </footer>
+    <!-- Main dans la main : scène three.js (plage, couple, chien) -->
+    <section class="stage" id="mariés" aria-labelledby="h-stage">
+      <div class="stage-fallback" v-if="!stageOk"><img src="img/web/couple.webp" alt="Nour et Aissam se tiennent par le bras" width="380" height="668"></div>
+      <canvas class="stage-canvas" id="stage" role="img" aria-label="Au coucher du soleil, sur la plage, Nour et Aissam se tiennent par le bras ; un chien se promène devant eux."></canvas>
+      <div class="stage-text">
+        <span class="caps" id="h-stage">Main dans la main</span>
+        <h2 class="stage-line">pour toute une vie</h2>
+      </div>
+    </section>
+
+    <footer class="closing" v-reveal>
+      <span class="ink lf9 deco sway" style="width:min(22vw,120px);left:3%;bottom:10%;--r:10deg" aria-hidden="true"></span>
+      <span class="ink lf9 deco sway" style="width:min(22vw,120px);right:3%;bottom:10%;--r:-10deg;transform:scaleX(-1);--t:8s" aria-hidden="true"></span>
+      <span class="ink filante" aria-hidden="true"></span>
+      <p class="s">{{ C.closing }}</p>
+      <div class="crest" aria-hidden="true"><span class="ink lf6 l"></span><span class="mono">N<i>&amp;</i>A</span><span class="ink lf6 r"></span></div>
+      <span class="caps">{{ footDate }}</span>
+    </footer>
+    <p class="credit">Silhouette du chien : <a href="https://commons.wikimedia.org/wiki/File:Dog_Silhouette_01.svg" target="_blank" rel="noopener">Amada44, Wikimedia Commons (domaine public)</a></p>
+  </div>
+
+  <audio ref="audio" loop preload="none"></audio>
 </div>
 
-<audio id="audio" loop preload="none"></audio>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" integrity="sha384-CI3ELBVUz9XQO+97x6nwMDPosPR5XvsxW2ua7N1Xeygeh1IxtgqtCkGfQY9WWdHu" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/vue/3.5.13/vue.global.prod.min.js" integrity="sha384-uVelsfHywBgjeava48lhiNRxrivB+BAMPAo1ylsykjuynJ5nEVEP1nWly0IE6anP" crossorigin="anonymous"></script>
 <script>
 /* =================================================================
    ✏️  À MODIFIER — toutes les infos du mariage sont ici.
@@ -381,12 +431,18 @@ const CONFIG = {
 };
 /* ================================================================= */
 
+/* Silhouette du chien : « Dog Silhouette 01 » par Amada44, Wikimedia Commons, domaine public.
+   Dessinée dans un canvas à partir de son tracé SVG : aucun fichier image à publier. */
+const DOG_PATH = "M 252.3,597.1 C 249.8,596.1 247.1,593.4 246.2,590.9 C 244.3,586.1 252.4,574.2 261.8,568 C 267.6,564.1 269.5,561.6 271.7,554.8 C 274.4,546.3 275.9,523.8 274.2,515.8 C 273.3,511.9 272.8,503.1 272.8,494.3 C 272.8,475.9 269.9,441.8 267.2,428.3 C 266.1,422.8 264.3,413.3 263.2,407.3 C 261.1,396 258.1,386.2 255.5,381.8 C 247.9,369.3 241.6,361.3 232.3,352.5 C 222,342.8 218.1,340.1 216.1,341.4 C 212.4,343.7 211.1,357.6 213.9,364.6 C 215.3,368.2 215.3,368.9 213.9,371.9 C 213,373.8 211.5,376.4 210.5,377.9 C 205.8,385 204.6,386.6 201.2,390.8 C 198,394.9 190.3,407.2 190.3,408.4 C 190.3,409.3 180.2,426 177.7,429.3 C 176.4,431 175.3,432.8 175.3,433.3 C 175.3,433.8 174.5,435.1 173.5,436.2 C 172.5,437.3 169.5,441.6 166.9,445.8 C 164.3,449.9 160.4,455.7 158.2,458.8 C 156,461.8 153.2,466.1 152.1,468.3 C 151,470.5 148.3,474.4 146.1,476.9 C 141.4,482.6 134.4,495.7 132.8,501.8 C 132.2,504.2 132,507.6 132.3,509.3 C 133.5,515.1 130.4,519.8 125.4,519.8 C 122.8,519.8 121.1,523.1 117.3,534.9 C 115.5,540.4 113.3,545.1 111.5,547.2 C 109.2,549.8 108.3,552.1 107.7,556.5 C 107.3,559.7 106.6,563.3 106.2,564.6 C 104.9,568 88.8,587.2 83.8,591.3 C 77.8,596.2 72.5,596.4 65.4,591.8 C 53,583.9 54.6,574.4 70.8,560.7 C 85.3,548.5 93.1,536.5 96.4,521.6 C 98.4,512.3 103,496.9 104.3,495.3 C 104.7,494.7 105.8,492 106.9,489.3 C 107.9,486.5 109.8,482.7 111,480.9 C 112.3,479 113.3,477 113.3,476.3 C 113.3,475.1 118.4,464.9 129.3,444.3 C 135.2,433.1 139.2,423.2 146.8,401.3 C 149.7,393 153.3,382.9 154.8,378.8 C 157.4,371.7 157.5,370.7 157.1,357.3 C 156.7,343.4 156.6,343.1 152,331.3 C 140.9,302.4 139.3,295.5 138.4,269.7 L 137.8,252.1 L 133.9,245.7 C 131.7,242.2 128,236.8 125.5,233.9 C 118.9,225.6 118,223.3 118.7,216.9 C 119.3,211.7 119,210.8 115.8,205.5 C 113.9,202.3 112.3,199.3 112.3,198.8 C 112.3,196.4 99.2,188.8 92.5,187.3 C 88.4,186.4 84.4,188.6 76.3,196 C 72.8,199.2 66.6,203.9 62.6,206.4 C 56,210.5 54.5,211 47.2,211.7 C 37.4,212.5 34.9,211.6 34.5,206.9 C 34.1,202.8 36.8,199.5 42.1,197.9 C 49.7,195.6 55,190.7 53.6,187.2 C 53.4,186.5 49.2,186.1 42,186.1 C 31.6,186.2 30.2,185.9 23.5,183.1 C 11.2,177.8-0.2,166.8 0,160.2 C 0,158.6 1.1,155.5 2.4,153.3 C 4.9,149.1 20.9,132.6 28.1,126.8 C 30.4,124.8 33.1,121.9 34,120.3 C 36.4,115.9 38.3,103.6 37.3,99.1 C 35.8,92.5 41,85.3 55.1,74.5 C 74.5,59.5 86.1,54.1 101.2,52.7 C 124.9,50.6 128.7,51.5 143.8,63.4 C 150.5,68.7 153.6,69.8 161.5,69.8 C 185.1,69.8 204,85.9 196.8,99.8 C 195.9,101.4 195,104.7 194.7,107.1 C 194.1,111.3 194.2,111.6 201.3,119.8 C 205.3,124.5 209.1,128.5 209.7,128.9 C 211.4,129.9 232.2,131 250.8,131.1 C 260.1,131.2 272.6,131.9 278.5,132.7 C 291.7,134.5 296.1,133.8 314.8,126.6 C 321.9,123.9 330,121.2 332.8,120.7 C 335.5,120.2 342.5,118.2 348.3,116.3 C 376.8,107 419.1,101.3 454.5,102 C 466.4,102.2 482.3,105.6 485.3,106.8 C 488.3,108 493.3,110.1 496.3,111.5 C 501.8,114.1 504.8,115 513.5,117 C 517.6,118 518.8,117.9 524.3,115.7 C 537.5,110.5 543.6,99.2 548.9,91.1 C 562,71.2 549.1,41.6 534.3,32.4 C 526.2,27.5 513.6,26 506.8,29.2 C 500.5,32.2 497.3,34.9 497.3,37.3 C 497.3,40.1 500.6,44.4 504.3,46.3 C 507.5,48 514.3,61 514.3,65.7 C 514.3,69.7 510.8,73.8 507.3,73.8 C 501.7,73.8 482.7,62.4 476.8,55.6 C 472.7,50.8 470.3,43.7 470.3,40.2 C 470.3,38.9 471.1,33.9 473.3,29.2 C 481.3,11.9 497.2,1.3 516.9,0.1 C 527.8,-0.6 543.2,5 549.9,9.1 C 563.6,17.6 575.3,31 580.5,44.3 C 591.3,71.6 579.5,101.6 574.4,109.3 C 572.9,111.5 561.7,129.4 551.6,139.5 C 547.1,144.1 543.1,148.7 542.8,149.7 C 541.9,152.7 544.6,157.7 551.5,165.6 C 558.3,173.3 560.1,177.3 564.3,193 C 568.4,209 566.5,233.8 557.4,279.3 C 556.3,284.8 554.9,293.8 554.3,299.3 C 553.6,304.8 552.7,311.7 552.2,314.7 C 550.5,324.9 551.8,338.2 555.9,352.6 C 556.7,355.5 558.1,360.3 558.8,363.2 C 561.9,374.9 574.5,396.6 584,406.7 C 590.8,413.9 592,416.7 590.3,422.5 C 588.5,428.7 586.9,505.7 588.3,514.5 C 589.5,521.5 589.1,528.2 587.3,531.6 C 586.8,532.5 585.9,535.5 585.2,538.1 C 584.4,541.5 582.6,544.5 579.6,547.6 C 577.2,550.1 575.3,552.7 575.3,553.3 C 575.3,553.9 574,555.7 572.3,557.2 C 570,559.4 568.3,560.1 565,560.2 C 559,560.3 557.3,558.6 557.3,552.8 C 557.3,550.2 556.6,546.3 555.7,544.2 C 554.2,540.6 554.3,539.8 557.1,526.8 C 568,478.1 566.3,459.1 547.7,420.3 C 541.5,407.3 539.4,404 532.2,396.2 C 529.6,393.4 525.9,388.6 524,385.6 C 517.5,375.5 512.3,371.4 512.3,376.6 C 512.3,377.5 513.7,381.9 515.3,386.3 C 517,390.7 519.7,398.1 521.3,402.8 C 522.9,407.4 526.8,416.1 529.8,422 C 535.5,433.2 536.3,436.9 534.3,443.8 C 531.5,453.2 529,468.6 528.3,480.8 C 527.7,490.8 526.8,496.2 525,501.8 C 523.6,505.9 522,512.7 521.4,516.8 C 520.8,520.9 519.6,526.1 518.8,528.3 C 518,530.5 517.4,534.4 517.3,537.1 C 517.3,543 514.2,549.2 510.3,551.3 C 506.3,553.3 486.4,553.4 482.4,551.3 C 477.9,549 477.7,546.9 480.7,536.5 C 482.6,530.1 482.7,530 490.2,527.3 C 495.2,525.4 495.9,524.8 499,518.8 C 502.3,512.3 502.4,512.1 502.9,495.3 C 503.5,477.7 503.4,476.4 498.3,448.3 C 497.2,442.2 496.3,435.6 496.3,433.6 C 496.3,426.6 490.7,413.7 482,400.3 C 473.5,387.1 465.3,368.8 461.9,355.2 C 461,351.8 459.6,347.3 458.7,345.2 C 457.8,343 454.6,334.3 451.5,325.8 C 448.5,317.2 444.9,307.1 443.5,303.3 C 440,293.3 439.5,283.8 442.2,276.8 C 443.3,273.7 444.3,270.3 444.3,269.2 C 444.3,266 440.9,263.4 437.8,264.2 C 435.2,264.8 434.6,265.8 432.3,273.3 C 430.5,279.1 426.7,283.8 423.8,283.8 C 421.1,283.8 418,281 416.3,276.9 C 414.6,272.9 408.6,268.8 404.4,268.8 C 397.3,268.8 382.7,272.6 374.8,276.4 C 366.6,280.3 361.4,284.9 354,294.4 C 344.2,307 340.1,311.7 333.7,317.4 C 326.5,323.9 307.9,337.8 306.5,337.8 C 304.9,337.8 301.3,342.4 301.3,344.4 C 301.3,345.4 302.2,348 303.3,350 C 306,355 305.8,358.2 302.3,372.3 L 299.2,384.3 L 300.3,424.3 C 301.6,477.5 302.9,495.6 306.4,510.6 C 308.9,521.4 308.8,522.2 305.3,529.4 C 300.6,539 298.8,549.5 297.4,574.5 C 296.4,591.8 295.6,594 289.5,595.8 C 285.5,597 254.7,598.1 252.3,597.1 z M 203.1,323.6 C 205.6,321 204.5,317 200.2,313.6 C 197.9,311.8 192.9,307.5 189.1,304 C 185.2,300.6 181.2,297.8 180,297.8 C 174.5,297.8 172.2,305.9 176.5,310.5 C 177.7,311.7 179,312.8 179.5,312.8 C 180.4,312.8 182.9,314.4 191.7,321 C 196.9,324.8 200.9,325.7 203.1,323.6 z";
+const DOG_MATRIX = [0.9759274, 0, 0, 0.9759274, 6, 8.38];
+const DOG_SIZE = [591, 598];
+
 document.documentElement.classList.add("js");
+const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const $ = s => document.querySelector(s);
+const pad = n => String(n).padStart(2, "0");
 const MONTHS = ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
 const DAYS = ["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"];
-const pad = n => String(n).padStart(2, "0");
-const $ = s => document.querySelector(s);
-const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 function parts(iso) {
   const [d, t] = iso.split("T");
@@ -395,63 +451,9 @@ function parts(iso) {
   return { y, mo, da, h, mi, wd: new Date(Date.UTC(y, mo - 1, da)).getUTCDay() };
 }
 
-// ---------- Textes ----------
-const couple = `${CONFIG.bride} & ${CONFIG.groom}`;
-document.title = couple;
-document.querySelectorAll("[data-couple]").forEach(el => el.textContent = couple);
-document.querySelectorAll("[data-initials]").forEach(el => el.textContent = `${CONFIG.bride[0]} ${CONFIG.groom[0]}`);
-document.querySelectorAll("[data-field]").forEach(el => el.textContent = CONFIG[el.dataset.field] || "");
-
-const D = parts(CONFIG.date);
-const hhmm = `${D.h}h${pad(D.mi)}`;
-const longDate = `${DAYS[D.wd]} ${D.da} ${MONTHS[D.mo - 1]} ${D.y}`;
-$("#heroWhen").innerHTML = "";
-$("#heroWhen").append(longDate, document.createElement("br"), `${hhmm} · ${CONFIG.venue}`);
-$("#placeWhen").innerHTML = "";
-$("#placeWhen").append(longDate, document.createElement("br"), hhmm);
-$("#footDate").textContent = `${pad(D.da)} · ${pad(D.mo)} · ${D.y}`;
-
-$("#mapsBtn").href = CONFIG.maps;
-const gstamp = p => `${p.y}${pad(p.mo)}${pad(p.da)}T${pad(p.h)}${pad(p.mi)}00`;
-$("#calBtn").href = "https://calendar.google.com/calendar/render?action=TEMPLATE"
-  + "&text=" + encodeURIComponent(`Mariage de ${couple}`)
-  + "&dates=" + gstamp(D) + "/" + gstamp({ ...D, h: Math.min(D.h + 5, 23) }) + "&ctz=Africa/Tunis"
-  + "&location=" + encodeURIComponent(`${CONFIG.venue}, ${CONFIG.address}`);
-
-if (CONFIG.programme.length) {
-  CONFIG.programme.forEach(step => {
-    const li = document.createElement("li");
-    li.innerHTML = '<span class="t"></span><span class="what"></span>';
-    li.querySelector(".t").textContent = step.time;
-    li.querySelector(".what").textContent = step.what;
-    $("#timeline").append(li);
-  });
-} else {
-  $("#programme").hidden = true;
-}
-
-const guest = new URLSearchParams(location.search).get("pour");
-if (guest) { $("#coverGuest").textContent = `Pour ${guest}`; $("#coverGuest").hidden = false; }
-
-// ---------- Compte à rebours ----------
-const target = new Date(CONFIG.date).getTime();
-(function tick() {
-  const diff = target - Date.now();
-  if (diff <= 0) { $("#countdown").outerHTML = '<p class="countdown-done">C’est aujourd’hui</p>'; return; }
-  const s = Math.floor(diff / 1000);
-  $("#cd-d").textContent = Math.floor(s / 86400);
-  $("#cd-h").textContent = pad(Math.floor(s / 3600) % 24);
-  $("#cd-m").textContent = pad(Math.floor(s / 60) % 60);
-  $("#cd-s").textContent = pad(s % 60);
-  setTimeout(tick, 1000);
-})();
-
-const io = "IntersectionObserver" in window
-  ? new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: .15 })
-  : null;
-document.querySelectorAll(".reveal").forEach(el => io ? io.observe(el) : el.classList.add("in"));
-
-// ---------- La mer au coucher du soleil (three.js) ----------
+/* =================================================================
+   Scènes three.js (la mer de l'arche, la poussière d'or, et la scène « Main dans la main »)
+   ================================================================= */
 const FRAG = `
 precision highp float;
 uniform vec2 uRes; uniform float uTime; uniform vec2 uPar;
@@ -483,7 +485,7 @@ void main(){
     col = mix(far, near, smoothstep(0.0, 0.45, dy));
     col = mix(col, vec3(0.93, 0.58, 0.47), exp(-dy * 18.0) * 0.55);
     float band = exp(-pow((uv.x - sun.x) * asp * (2.2 + dy * 9.0), 2.0));
-    float glit = pow(noise(vec2(x * 9.0, z * 5.0 - uTime * 1.4)), 6.0) * 9.0;
+    float glit = (pow(noise(vec2(x * 20.0, z * 8.0 - uTime * 1.3)), 7.0) * 6.0 + pow(noise(vec2(x * 34.0 + 3.7, z * 13.0 - uTime * 1.9)), 8.0) * 5.0) * 0.8;
     col += vec3(1.0, 0.82, 0.6) * band * (0.25 + glit) * (0.4 + 0.6 * w) * smoothstep(0.6, 0.0, dy);
     col += (w - 0.5) * 0.05;
   }
@@ -492,150 +494,453 @@ void main(){
   gl_FragColor = vec4(col, 1.0);
 }`;
 
-const scenes = [];
-function makeSea(canvas) {
-  if (!window.THREE) return null;
-  try {
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: "low-power" });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
-    const scene = new THREE.Scene();
-    const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
-    const uniforms = { uRes: { value: new THREE.Vector2(1, 1) }, uTime: { value: 0 }, uPar: { value: new THREE.Vector2(0, 0) } };
-    scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.ShaderMaterial({
-      uniforms, vertexShader: "void main(){ gl_Position = vec4(position, 1.0); }", fragmentShader: FRAG
-    })));
-    const s = { canvas, renderer, scene, camera, uniforms, visible: true, active: true };
-    const size = () => {
-      const r = canvas.parentElement.getBoundingClientRect();
-      renderer.setSize(Math.max(1, r.width), Math.max(1, r.height), false);
-      renderer.getDrawingBufferSize(uniforms.uRes.value);
-    };
-    size();
-    new ResizeObserver(size).observe(canvas.parentElement);
-    if ("IntersectionObserver" in window) new IntersectionObserver(es => { s.visible = es[0].isIntersecting; }).observe(canvas);
-    scenes.push(s);
-    return s;
-  } catch (e) { return null; }
-}
-const seaCover = makeSea($("#seaCover"));
-const seaHero = makeSea($("#seaHero"));
-if (seaHero) seaHero.active = false;
-
-// Poussière d'or qui flotte doucement sur tout le site
-function makeDust(canvas) {
-  if (!window.THREE || reduced) return null;
-  try {
-    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false, powerPreference: "low-power" });
-    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
-    renderer.setPixelRatio(dpr);
-    const scene = new THREE.Scene();
-    const camera = new THREE.OrthographicCamera(0, 1, 1, 0, -1, 1);
-    const n = innerWidth < 700 ? 45 : 80;
-    const pos = new Float32Array(n * 3), seed = new Float32Array(n);
-    for (let i = 0; i < n; i++) { pos[i * 3] = Math.random(); pos[i * 3 + 1] = Math.random(); seed[i] = Math.random(); }
-    const geo = new THREE.BufferGeometry();
-    geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
-    geo.setAttribute("aSeed", new THREE.BufferAttribute(seed, 1));
-    const uniforms = { uTime: { value: 0 }, uPar: { value: new THREE.Vector2() }, uDpr: { value: dpr } };
-    scene.add(new THREE.Points(geo, new THREE.ShaderMaterial({
-      uniforms, transparent: true, depthWrite: false,
-      vertexShader: `attribute float aSeed; uniform float uTime; uniform float uDpr; uniform vec2 uPar; varying float vA;
-        void main(){
-          vec3 p = position;
-          p.y = fract(p.y + uTime * (0.006 + aSeed * 0.014));
-          p.x += sin(uTime * 0.35 + aSeed * 12.0) * 0.018 + uPar.x * 0.02 * aSeed;
-          vA = (0.3 + 0.7 * (0.5 + 0.5 * sin(uTime * (0.8 + aSeed * 1.6) + aSeed * 30.0))) * smoothstep(0.0, 0.12, p.y) * smoothstep(1.0, 0.88, p.y);
-          gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
-          gl_PointSize = (1.6 + aSeed * 3.6) * uDpr;
-        }`,
-      fragmentShader: `varying float vA;
-        void main(){ float d = length(gl_PointCoord - 0.5); gl_FragColor = vec4(0.72, 0.57, 0.34, smoothstep(0.5, 0.0, d) * vA * 0.9); }`
-    })));
-    const size = () => renderer.setSize(innerWidth, innerHeight, false);
-    size(); addEventListener("resize", size);
-    const s = { canvas, renderer, scene, camera, uniforms, visible: true, active: true };
-    scenes.push(s);
-    return s;
-  } catch (e) { return null; }
-}
-makeDust($("#dust"));
-
-// parallaxe douce au mouvement de la souris / du doigt
-const par = { x: 0, y: 0, tx: 0, ty: 0 };
-addEventListener("pointermove", e => { par.tx = e.clientX / innerWidth - .5; par.ty = .5 - e.clientY / innerHeight; }, { passive: true });
-
-const t0 = performance.now();
-function frame(now) {
-  const t = (now - t0) / 1000;
-  par.x += (par.tx + Math.sin(t * .2) * .15 - par.x) * .04;
-  par.y += (par.ty - par.y) * .04;
-  for (const s of scenes) {
-    if (!s.active || !s.visible || document.hidden) continue;
-    s.uniforms.uTime.value = t;
-    s.uniforms.uPar.value.set(par.x, par.y);
-    s.renderer.render(s.scene, s.camera);
+/* Même coucher de soleil, mais avec une plage au premier plan : le bas de la scène
+   se fond exactement dans l'ivoire de la page (aucune couture visible). */
+const FRAG_STAGE = `
+precision highp float;
+uniform vec2 uRes; uniform float uTime; uniform vec2 uPar;
+float hash(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453); }
+float noise(vec2 p){ vec2 i = floor(p), f = fract(p); f = f*f*(3.0-2.0*f);
+  return mix(mix(hash(i), hash(i+vec2(1,0)), f.x), mix(hash(i+vec2(0,1)), hash(i+vec2(1,1)), f.x), f.y); }
+void main(){
+  vec2 uv = gl_FragCoord.xy / uRes;
+  float asp = uRes.x / uRes.y;
+  float horizon = 0.50 + uPar.y * 0.008;
+  float shore = 0.185 + 0.010 * sin(uv.x * 7.0 + uTime * 0.45) + 0.005 * sin(uv.x * 19.0 - uTime * 0.7);
+  vec2 sun = vec2(0.5 + uPar.x * 0.02, horizon + 0.075);
+  vec3 ivory = vec3(0.984, 0.969, 0.945);
+  vec3 col;
+  if (uv.y > horizon) {
+    float k = (uv.y - horizon) / (1.0 - horizon);
+    vec3 low = vec3(0.95, 0.60, 0.46), mid = vec3(0.97, 0.80, 0.68), top = vec3(0.93, 0.88, 0.86);
+    col = mix(low, mid, smoothstep(0.0, 0.32, k));
+    col = mix(col, top, smoothstep(0.32, 1.0, k));
+    float d = length((uv - sun) * vec2(asp, 1.0));
+    col = mix(col, vec3(1.0, 0.93, 0.78), smoothstep(0.085, 0.077, d));
+    col += vec3(1.0, 0.72, 0.5) * exp(-d * 8.0) * 0.5;
+    float cl = noise(vec2(uv.x * 3.0 + uTime * 0.01, uv.y * 14.0)) * smoothstep(0.1, 0.5, k) * smoothstep(0.9, 0.5, k);
+    col = mix(col, vec3(0.98, 0.84, 0.78), cl * 0.25);
+    col += (hash(gl_FragCoord.xy + uTime) - 0.5) * 0.02;
+  } else if (uv.y > shore) {
+    float dy = horizon - uv.y;
+    float z = 1.0 / (dy + 0.035);
+    float x = (uv.x - 0.5) * z;
+    float w = noise(vec2(x * 1.6, z * 0.9 - uTime * 0.35)) * 0.6 + noise(vec2(x * 4.0 + uTime * 0.2, z * 2.2 - uTime * 0.6)) * 0.4;
+    vec3 near = vec3(0.13, 0.25, 0.33), far = vec3(0.36, 0.42, 0.52);
+    col = mix(far, near, smoothstep(0.0, 0.34, dy));
+    col = mix(col, vec3(0.93, 0.58, 0.47), exp(-dy * 16.0) * 0.55);
+    float band = exp(-pow((uv.x - sun.x) * asp * (2.0 + dy * 8.0), 2.0));
+    float glit = (pow(noise(vec2(x * 20.0, z * 8.0 - uTime * 1.3)), 7.0) * 6.0 + pow(noise(vec2(x * 34.0 + 3.7, z * 13.0 - uTime * 1.9)), 8.0) * 5.0) * 0.8;
+    col += vec3(1.0, 0.82, 0.6) * band * (0.25 + glit) * (0.4 + 0.6 * w) * smoothstep(0.5, 0.0, dy);
+    col += (w - 0.5) * 0.05;
+    col += (hash(gl_FragCoord.xy + uTime) - 0.5) * 0.02;
+  } else {
+    float k = clamp((shore - uv.y) / shore, 0.0, 1.0);          // 0 : au bord de l'eau, 1 : bas de la scène
+    vec3 sand = mix(vec3(0.86, 0.73, 0.62), ivory, smoothstep(0.0, 0.9, k));
+    float sheen = exp(-pow((uv.x - sun.x) * asp * 2.2, 2.0)) * (1.0 - k);
+    sand += vec3(1.0, 0.72, 0.5) * sheen * 0.22;
+    col = sand;
+    float foam = smoothstep(0.016, 0.0, shore - uv.y) * (0.65 + 0.35 * noise(vec2(uv.x * 40.0, uTime * 0.6)));
+    col = mix(col, vec3(1.0, 0.97, 0.92), foam);
   }
-  const arch = $("#arch");
-  if (arch) arch.style.transform = `rotateY(${par.x * 6}deg) rotateX(${par.y * 4}deg)`;
-  if (!reduced) requestAnimationFrame(frame);
-}
-requestAnimationFrame(frame);
+  col += exp(-abs(uv.y - horizon) * 90.0) * vec3(1.0, 0.85, 0.75) * 0.22;
+  gl_FragColor = vec4(col, 1.0);
+}`;
 
-// ---------- Ouverture ----------
-function sparkle() {
-  if (reduced) return;
-  const r = $("#seal").getBoundingClientRect();
-  const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
-  const colors = ["var(--gold)", "#fffaf1", "var(--coral)"];
-  for (let i = 0; i < 22; i++) {
-    const a = (i / 22) * Math.PI * 2 + Math.random() * .3, dist = 80 + Math.random() * 140;
-    const b = document.createElement("span");
-    b.className = "spark";
-    b.innerHTML = '<svg viewBox="0 0 24 24"><use href="#star"/></svg>';
-    b.style.left = `${cx}px`; b.style.top = `${cy}px`;
-    b.style.setProperty("--dx", `${Math.cos(a) * dist}px`);
-    b.style.setProperty("--dy", `${Math.sin(a) * dist}px`);
-    b.style.setProperty("--rot", `${Math.round(Math.random() * 300)}deg`);
-    b.style.setProperty("--s", `${7 + Math.random() * 9}px`);
-    b.style.setProperty("--c", colors[i % colors.length]);
-    document.body.append(b);
-    setTimeout(() => b.remove(), 1600);
+/* Le couple : légère respiration, l'ourlet de la robe ondule, lumière chaude du couchant.
+   La texture est pré-multipliée : pas de liseré sombre sur les bords de l'aquarelle. */
+const COUPLE_VERT = `
+uniform float uTime; varying vec2 vUv;
+void main(){
+  vUv = uv; vec3 p = position;
+  float hem = smoothstep(0.36, 0.0, uv.y);
+  p.x += sin(uTime * 1.25 + uv.y * 7.0) * 0.008 * hem;
+  p.y += sin(uTime * 0.9) * 0.0035;
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
+}`;
+const COUPLE_FRAG = `
+uniform sampler2D uMap; varying vec2 vUv;
+void main(){
+  vec4 t = texture2D(uMap, vUv);
+  float warm = smoothstep(0.0, 1.0, vUv.x * 0.7 + vUv.y * 0.3);
+  t.rgb *= mix(vec3(1.0), vec3(1.07, 0.95, 0.86), warm * 0.6);
+  gl_FragColor = t;
+}`;
+
+/* Le chien : silhouette bleu nuit. Les pattes avant et arrière se balancent en opposition,
+   le corps rebondit, la queue frétille, la tête dodeline — le tout dans le vertex shader. */
+const DOG_VERT = `
+uniform float uWalk; uniform float uTime; varying vec2 vUv;
+void main(){
+  vUv = uv; vec3 p = position;
+  float u = uv.x, v = uv.y;
+  float leg = smoothstep(0.46, 0.04, v); leg *= leg;
+  float hind = step(0.62, u);
+  float ph = uWalk + hind * 3.14159 + (1.0 - hind) * smoothstep(0.0, 0.35, u) * 0.9;
+  p.x += sin(ph) * 0.085 * leg;
+  p.y += max(0.0, cos(ph)) * 0.05 * leg;
+  p.y += abs(sin(uWalk)) * 0.014;
+  float tail = smoothstep(0.80, 0.97, u) * smoothstep(0.50, 0.85, v);
+  p.y += sin(uTime * 7.0) * 0.012 * tail;
+  p.x += cos(uTime * 5.0) * 0.008 * tail;
+  float head = smoothstep(0.30, 0.04, u) * smoothstep(0.50, 0.78, v);
+  p.y += sin(uWalk * 2.0) * 0.012 * head;
+  gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
+}`;
+const DOG_FRAG = `
+uniform sampler2D uMap; uniform vec3 uColor; uniform float uAlpha; varying vec2 vUv;
+void main(){ float a = texture2D(uMap, vUv).a * uAlpha; gl_FragColor = vec4(uColor * a, a); }`;
+
+const SHADOW_FRAG = `
+uniform vec3 uColor; uniform float uAlpha; varying vec2 vUv;
+void main(){ float d = length((vUv - 0.5) * 2.0); float a = smoothstep(1.0, 0.0, d) * uAlpha; gl_FragColor = vec4(uColor * a, a); }`;
+const PLAIN_VERT = `varying vec2 vUv; void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`;
+
+function makeEngine() {
+  const scenes = [];
+  const par = { x: 0, y: 0, tx: 0, ty: 0 };
+  addEventListener("pointermove", e => { par.tx = e.clientX / innerWidth - .5; par.ty = .5 - e.clientY / innerHeight; }, { passive: true });
+
+  function watchVisibility(s) {
+    if ("IntersectionObserver" in window) {
+      new IntersectionObserver(es => { s.visible = es[0].isIntersecting; if (s.visible) s.dirty = true; }).observe(s.canvas);
+    }
   }
+
+  function makeSea(canvas) {
+    if (!window.THREE) return null;
+    try {
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: "low-power" });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+      const scene = new THREE.Scene();
+      const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+      const uniforms = { uRes: { value: new THREE.Vector2(1, 1) }, uTime: { value: 0 }, uPar: { value: new THREE.Vector2(0, 0) } };
+      scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.ShaderMaterial({
+        uniforms, vertexShader: "void main(){ gl_Position = vec4(position, 1.0); }", fragmentShader: FRAG
+      })));
+      const s = { canvas, renderer, scene, camera, uniforms, visible: true, active: true, dirty: true };
+      const size = () => {
+        const r = canvas.parentElement.getBoundingClientRect();
+        renderer.setSize(Math.max(1, r.width), Math.max(1, r.height), false);
+        renderer.getDrawingBufferSize(uniforms.uRes.value);
+        s.dirty = true;
+      };
+      size();
+      new ResizeObserver(size).observe(canvas.parentElement);
+      watchVisibility(s);
+      scenes.push(s);
+      return s;
+    } catch (e) { return null; }
+  }
+
+  // Poussière d'or qui flotte doucement sur tout le site
+  function makeDust(canvas) {
+    if (!window.THREE || reduced) return null;
+    try {
+      const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: false, powerPreference: "low-power" });
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+      renderer.setPixelRatio(dpr);
+      const scene = new THREE.Scene();
+      const camera = new THREE.OrthographicCamera(0, 1, 1, 0, -1, 1);
+      const n = innerWidth < 700 ? 45 : 80;
+      const pos = new Float32Array(n * 3), seed = new Float32Array(n);
+      for (let i = 0; i < n; i++) { pos[i * 3] = Math.random(); pos[i * 3 + 1] = Math.random(); seed[i] = Math.random(); }
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+      geo.setAttribute("aSeed", new THREE.BufferAttribute(seed, 1));
+      const uniforms = { uTime: { value: 0 }, uPar: { value: new THREE.Vector2() }, uDpr: { value: dpr } };
+      scene.add(new THREE.Points(geo, new THREE.ShaderMaterial({
+        uniforms, transparent: true, depthWrite: false,
+        vertexShader: `attribute float aSeed; uniform float uTime; uniform float uDpr; uniform vec2 uPar; varying float vA;
+          void main(){
+            vec3 p = position;
+            p.y = fract(p.y + uTime * (0.006 + aSeed * 0.014));
+            p.x += sin(uTime * 0.35 + aSeed * 12.0) * 0.018 + uPar.x * 0.02 * aSeed;
+            vA = (0.3 + 0.7 * (0.5 + 0.5 * sin(uTime * (0.8 + aSeed * 1.6) + aSeed * 30.0))) * smoothstep(0.0, 0.12, p.y) * smoothstep(1.0, 0.88, p.y);
+            gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
+            gl_PointSize = (1.6 + aSeed * 3.6) * uDpr;
+          }`,
+        fragmentShader: `varying float vA;
+          void main(){ float d = length(gl_PointCoord - 0.5); gl_FragColor = vec4(0.72, 0.57, 0.34, smoothstep(0.5, 0.0, d) * vA * 0.9); }`
+      })));
+      const size = () => renderer.setSize(innerWidth, innerHeight, false);
+      size(); addEventListener("resize", size);
+      const s = { canvas, renderer, scene, camera, uniforms, visible: true, active: true, dirty: true };
+      scenes.push(s);
+      return s;
+    } catch (e) { return null; }
+  }
+
+  // Silhouette du chien : tracé SVG -> canvas -> texture (rognée au plus près)
+  function dogTexture() {
+    const k = 1.1, W = Math.ceil(DOG_SIZE[0] * k), H = Math.ceil(DOG_SIZE[1] * k);
+    const c = document.createElement("canvas"); c.width = W; c.height = H;
+    const g = c.getContext("2d");
+    g.setTransform(DOG_MATRIX[0] * k, 0, 0, DOG_MATRIX[3] * k, DOG_MATRIX[4] * k, DOG_MATRIX[5] * k);
+    g.fillStyle = "#fff"; g.fill(new Path2D(DOG_PATH));
+    const px = g.getImageData(0, 0, W, H).data;
+    let x0 = W, y0 = H, x1 = 0, y1 = 0;
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (px[(y * W + x) * 4 + 3] > 8) { if (x < x0) x0 = x; if (x > x1) x1 = x; if (y < y0) y0 = y; if (y > y1) y1 = y; }
+    const w = x1 - x0 + 1, h = y1 - y0 + 1;
+    const out = document.createElement("canvas"); out.width = w; out.height = h;
+    out.getContext("2d").drawImage(c, x0, y0, w, h, 0, 0, w, h);
+    const tex = new THREE.CanvasTexture(out);
+    tex.minFilter = THREE.LinearMipmapLinearFilter; tex.anisotropy = 4;
+    return { tex, aspect: w / h };
+  }
+
+  // La scène « Main dans la main » : plage, couple aquarelle, chien qui se promène, lucioles dorées
+  function makeStage(canvas, onFail) {
+    if (!window.THREE) return null;
+    try {
+      const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, powerPreference: "low-power" });
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);   // scène plein écran : on plafonne pour les téléphones modestes
+      renderer.setPixelRatio(dpr);
+      const scene = new THREE.Scene();
+      const camera = new THREE.OrthographicCamera(0, 1, 1, 0, -10, 10);
+      const U = { uRes: { value: new THREE.Vector2(1, 1) }, uTime: { value: 0 }, uPar: { value: new THREE.Vector2() } };
+      const flat = { transparent: true, depthTest: false, depthWrite: false, premultipliedAlpha: true };
+
+      const bg = new THREE.Mesh(new THREE.PlaneGeometry(2, 2), new THREE.ShaderMaterial({
+        uniforms: U, vertexShader: "void main(){ gl_Position = vec4(position.xy, 0.0, 1.0); }", fragmentShader: FRAG_STAGE, depthTest: false, depthWrite: false
+      }));
+      bg.frustumCulled = false; bg.renderOrder = 0; scene.add(bg);
+
+      const shadowMat = (a) => new THREE.ShaderMaterial({ ...flat, uniforms: { uColor: { value: new THREE.Color(0.11, 0.20, 0.27) }, uAlpha: { value: a } }, vertexShader: PLAIN_VERT, fragmentShader: SHADOW_FRAG });
+      const coupleShadow = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), shadowMat(0.30)); coupleShadow.renderOrder = 1; scene.add(coupleShadow);
+      const dogShadow = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), shadowMat(0.28)); dogShadow.renderOrder = 1; scene.add(dogShadow);
+
+      const coupleMat = new THREE.ShaderMaterial({ ...flat, uniforms: { uMap: { value: null }, uTime: U.uTime }, vertexShader: COUPLE_VERT, fragmentShader: COUPLE_FRAG });
+      const couple = new THREE.Mesh(new THREE.PlaneGeometry(1, 1, 4, 24), coupleMat);
+      couple.renderOrder = 2; couple.visible = false; scene.add(couple);
+      let coupleAspect = 0.569;
+
+      const dogTex = dogTexture();
+      const dogMat = new THREE.ShaderMaterial({ ...flat, uniforms: { uMap: { value: dogTex.tex }, uColor: { value: new THREE.Color(0.11, 0.20, 0.27) }, uAlpha: { value: 1.0 }, uWalk: { value: 0 }, uTime: U.uTime }, vertexShader: DOG_VERT, fragmentShader: DOG_FRAG });
+      const dog = new THREE.Mesh(new THREE.PlaneGeometry(1, 1, 36, 28), dogMat);
+      dog.renderOrder = 3; scene.add(dog);
+
+      // Lucioles dorées autour du couple (additif)
+      const N = innerWidth < 700 ? 22 : 36;
+      const mp = new Float32Array(N * 3), ms = new Float32Array(N);
+      for (let i = 0; i < N; i++) { mp[i * 3] = Math.random(); mp[i * 3 + 1] = Math.random(); ms[i] = Math.random(); }
+      const mg = new THREE.BufferGeometry();
+      mg.setAttribute("position", new THREE.BufferAttribute(mp, 3));
+      mg.setAttribute("aSeed", new THREE.BufferAttribute(ms, 1));
+      const motes = new THREE.Points(mg, new THREE.ShaderMaterial({
+        uniforms: { uTime: U.uTime, uDpr: { value: dpr } }, transparent: true, depthTest: false, depthWrite: false, blending: THREE.AdditiveBlending,
+        vertexShader: `attribute float aSeed; uniform float uTime; uniform float uDpr; varying float vA;
+          void main(){
+            float y = fract(position.y + uTime * (0.012 + aSeed * 0.02));
+            vec2 q = vec2(0.5 + (position.x - 0.5) * 0.62 + sin(uTime * 0.5 + aSeed * 30.0) * 0.025, 0.16 + y * 0.62);
+            vA = (0.35 + 0.65 * (0.5 + 0.5 * sin(uTime * (1.0 + aSeed * 2.0) + aSeed * 40.0))) * smoothstep(0.0, 0.2, y) * smoothstep(1.0, 0.7, y);
+            gl_Position = vec4(q * 2.0 - 1.0, 0.0, 1.0);
+            gl_PointSize = (3.0 + aSeed * 6.0) * uDpr;
+          }`,
+        fragmentShader: `varying float vA; void main(){ float d = length(gl_PointCoord - 0.5); gl_FragColor = vec4(1.0, 0.80, 0.50, smoothstep(0.5, 0.0, d) * vA * 0.55); }`
+      }));
+      motes.frustumCulled = false; motes.renderOrder = 4; scene.add(motes);
+
+      const st = { W: 1, H: 1, dogX: 0, dir: -1, dw: 100, dh: 100, speed: 60 };
+      const s = { canvas, renderer, scene, camera, uniforms: U, visible: false, active: true, dirty: true, ready: false };
+
+      new THREE.TextureLoader().load("img/web/couple.webp", tex => {
+        tex.premultiplyAlpha = true; tex.minFilter = THREE.LinearMipmapLinearFilter; tex.anisotropy = 4; tex.needsUpdate = true;
+        coupleMat.uniforms.uMap.value = tex;
+        coupleAspect = tex.image.width / tex.image.height;
+        couple.visible = true; s.ready = true; layout(); s.dirty = true;
+      }, undefined, () => { if (onFail) onFail(); });
+
+      function layout() {
+        const r = canvas.getBoundingClientRect();
+        const W = Math.max(1, r.width), H = Math.max(1, r.height);
+        st.W = W; st.H = H;
+        renderer.setSize(W, H, false);
+        renderer.getDrawingBufferSize(U.uRes.value);
+        camera.left = 0; camera.right = W; camera.top = H; camera.bottom = 0; camera.updateProjectionMatrix();
+        const narrow = W < 600;
+        const ch = H * (narrow ? 0.60 : 0.66), cw = ch * coupleAspect;
+        couple.scale.set(cw, ch, 1);
+        couple.userData.baseX = W * (narrow ? 0.5 : 0.5);
+        couple.position.set(couple.userData.baseX, H * 0.115 + ch / 2, 0);
+        coupleShadow.scale.set(cw * 0.95, H * 0.045, 1);
+        coupleShadow.position.set(couple.userData.baseX, H * 0.112, 0);
+        st.dh = Math.min(Math.max(ch * 0.27, 92), 170);   // un chien mesure environ un tiers de la taille d'un adulte
+        st.dw = st.dh * dogTex.aspect;
+        dog.scale.set(st.dw * (st.dir < 0 ? 1 : -1), st.dh, 1);
+        dog.position.y = H * 0.07 + st.dh / 2;
+        dogShadow.scale.set(st.dw * 0.85, st.dh * 0.16, 1);
+        dogShadow.position.y = H * 0.07 + 2;
+        st.speed = Math.min(Math.max(W * 0.11, 52), 100);
+        s.dirty = true;
+      }
+      layout();
+      new ResizeObserver(layout).observe(canvas);
+      watchVisibility(s);
+
+      s.update = (t, dt) => {
+        U.uPar.value.set(par.x, par.y);
+        // Le chien n'est placé qu'à la première image visible, avec la vraie largeur de la scène
+        // (au montage, la page est encore masquée par v-cloak : la scène mesure 0 px).
+        if (!st.placed && st.W > 50) { st.dogX = reduced ? st.W * 0.2 : st.W + st.dw * 0.6; st.placed = true; }
+        if (!st.placed) return;
+        couple.position.x = couple.userData.baseX + par.x * 12 + (reduced ? 0 : Math.sin(t * 0.55) * 1.4);
+        couple.rotation.z = reduced ? 0 : Math.sin(t * 0.5) * 0.0035;
+        coupleShadow.position.x = couple.position.x;
+        if (!reduced) {
+          st.dogX += st.dir * st.speed * dt;
+          if (st.dir < 0 && st.dogX < -st.dw * 0.7) { st.dir = 1; dog.scale.x = -st.dw; }
+          else if (st.dir > 0 && st.dogX > st.W + st.dw * 0.7) { st.dir = -1; dog.scale.x = st.dw; }
+          dogMat.uniforms.uWalk.value += (st.speed * dt) / (st.dw * 0.95) * Math.PI * 2;
+        }
+        dog.position.x = st.dogX; dogShadow.position.x = st.dogX;
+      };
+      scenes.push(s);
+      return s;
+    } catch (e) { return null; }
+  }
+
+  const t0 = performance.now();
+  let last = t0;
+  function frame(now) {
+    const t = (now - t0) / 1000, dt = Math.min(0.05, (now - last) / 1000); last = now;
+    par.x += (par.tx + Math.sin(t * .2) * .15 - par.x) * .04;
+    par.y += (par.ty - par.y) * .04;
+    for (const s of scenes) {
+      if (!s.active || !s.visible || document.hidden) continue;
+      if (reduced && !s.dirty) continue;
+      s.dirty = false;
+      s.uniforms.uTime.value = t;
+      if (s.uniforms.uPar && !s.update) s.uniforms.uPar.value.set(par.x, par.y);
+      if (s.update) s.update(t, dt);
+      s.renderer.render(s.scene, s.camera);
+    }
+    const arch = $("#arch");
+    if (arch) arch.style.transform = `rotateY(${par.x * 6}deg) rotateX(${par.y * 4}deg)`;
+    requestAnimationFrame(frame);
+  }
+
+  return {
+    start() { requestAnimationFrame(frame); },
+    makeSea, makeDust, makeStage,
+    dispose(s) { if (!s) return; s.active = false; s.renderer.dispose(); const i = scenes.indexOf(s); if (i >= 0) scenes.splice(i, 1); },
+  };
 }
 
-const audio = $("#audio"), musicBtn = $("#music");
-if (CONFIG.music) audio.src = CONFIG.music;
-musicBtn.addEventListener("click", () => {
-  if (audio.paused) { audio.play().catch(() => {}); musicBtn.style.opacity = 1; musicBtn.setAttribute("aria-label", "Couper la musique"); }
-  else { audio.pause(); musicBtn.style.opacity = .5; musicBtn.setAttribute("aria-label", "Lancer la musique"); }
+/* =================================================================
+   Application Vue 3 (version « global », sans build) : textes, compte à rebours, enveloppe, musique
+   ================================================================= */
+const { createApp, ref, computed, onMounted, onBeforeUnmount } = Vue;
+
+const app = createApp({
+  setup() {
+    const C = CONFIG;
+    const couple = `${C.bride} & ${C.groom}`;
+    const D = parts(C.date);
+    const hhmm = `${D.h}h${pad(D.mi)}`;
+    const longDate = `${DAYS[D.wd]} ${D.da} ${MONTHS[D.mo - 1]} ${D.y}`;
+    const footDate = `${pad(D.da)} · ${pad(D.mo)} · ${D.y}`;
+    const gstamp = p => `${p.y}${pad(p.mo)}${pad(p.da)}T${pad(p.h)}${pad(p.mi)}00`;
+    const calHref = "https://calendar.google.com/calendar/render?action=TEMPLATE"
+      + "&text=" + encodeURIComponent(`Mariage de ${couple}`)
+      + "&dates=" + gstamp(D) + "/" + gstamp({ ...D, h: Math.min(D.h + 5, 23) }) + "&ctz=Africa/Tunis"
+      + "&location=" + encodeURIComponent(`${C.venue}, ${C.address}`);
+    const guest = new URLSearchParams(location.search).get("pour");
+
+    // Compte à rebours
+    const target = new Date(C.date).getTime();
+    const now = ref(Date.now());
+    const left = computed(() => {
+      const diff = target - now.value;
+      if (diff <= 0) return { done: true };
+      const s = Math.floor(diff / 1000);
+      return { done: false, d: Math.floor(s / 86400), h: pad(Math.floor(s / 3600) % 24), m: pad(Math.floor(s / 60) % 60), s: pad(s % 60) };
+    });
+    let timer = null;
+
+    // Enveloppe : s1 sceau, s2 rabat, s3 carte, s4 zoom ; puis fondu et retrait
+    const step = ref(0), fading = ref(false), gone = ref(false), siteState = ref("idle");
+    const stageOk = ref(true);
+    const musicShown = ref(false), musicOn = ref(false);
+    const audio = ref(null);
+    const wait = ms => new Promise(r => setTimeout(r, reduced ? 0 : ms));
+
+    const engine = makeEngine();
+    let seaCover = null, seaHero = null, stage = null;
+    let opened = false;
+
+    function sparkle() {
+      if (reduced) return;
+      const r = $("#seal").getBoundingClientRect();
+      const cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+      const colors = ["var(--gold)", "#fffaf1", "var(--coral)"];
+      for (let i = 0; i < 22; i++) {
+        const a = (i / 22) * Math.PI * 2 + Math.random() * .3, dist = 80 + Math.random() * 140;
+        const b = document.createElement("span");
+        b.className = "spark";
+        b.innerHTML = '<svg viewBox="0 0 24 24"><use href="#star"/></svg>';
+        b.style.left = `${cx}px`; b.style.top = `${cy}px`;
+        b.style.setProperty("--dx", `${Math.cos(a) * dist}px`);
+        b.style.setProperty("--dy", `${Math.sin(a) * dist}px`);
+        b.style.setProperty("--rot", `${Math.round(Math.random() * 300)}deg`);
+        b.style.setProperty("--s", `${7 + Math.random() * 9}px`);
+        b.style.setProperty("--c", colors[i % colors.length]);
+        document.body.append(b);
+        setTimeout(() => b.remove(), 1600);
+      }
+    }
+
+    async function open() {
+      if (opened) return; opened = true;
+      if (C.music && audio.value) { audio.value.play().catch(() => {}); musicShown.value = true; musicOn.value = true; }
+      sparkle();
+      step.value = 1; await wait(500);
+      step.value = 2; await wait(900);
+      step.value = 3; await wait(1100);
+      step.value = 4; await wait(450);
+      window.scrollTo(0, 0);
+      if (seaHero) { seaHero.active = true; seaHero.dirty = true; }
+      siteState.value = "enter";
+      document.body.style.overflow = "";
+      fading.value = true;
+      await wait(1100);
+      gone.value = true;
+      engine.dispose(seaCover); seaCover = null;
+    }
+
+    function toggleMusic() {
+      const a = audio.value; if (!a) return;
+      if (a.paused) { a.play().catch(() => {}); musicOn.value = true; } else { a.pause(); musicOn.value = false; }
+    }
+
+    onMounted(() => {
+      document.title = couple;
+      document.body.style.overflow = "hidden";
+      if (C.music && audio.value) audio.value.src = C.music;
+      timer = setInterval(() => { now.value = Date.now(); }, 1000);
+      seaCover = engine.makeSea($("#seaCover"));
+      seaHero = engine.makeSea($("#seaHero"));
+      if (seaHero) seaHero.active = false;
+      engine.makeDust($("#dust"));
+      stage = engine.makeStage($("#stage"), () => { stageOk.value = false; });
+      if (!stage) stageOk.value = false;
+      engine.start();
+    });
+    onBeforeUnmount(() => clearInterval(timer));
+
+    return { C, couple, hhmm, longDate, footDate, calHref, guest, left, step, fading, gone, siteState, stageOk, musicShown, musicOn, audio, open, toggleMusic };
+  }
 });
 
-const cover = $("#cover"), site = $("#site");
-const wait = ms => new Promise(r => setTimeout(r, reduced ? 0 : ms));
-document.body.style.overflow = "hidden";
-let opened = false;
-async function openInvitation() {
-  if (opened) return; opened = true;
-  if (CONFIG.music) { audio.play().catch(() => {}); musicBtn.hidden = false; }
-  sparkle();
-  cover.classList.add("s1");
-  await wait(500);
-  cover.classList.add("s2");
-  await wait(900);
-  cover.classList.add("s3");
-  await wait(1100);
-  cover.classList.add("s4");
-  await wait(450);
-  window.scrollTo(0, 0);
-  if (seaHero) seaHero.active = true;
-  if (reduced) requestAnimationFrame(frame);
-  site.classList.remove("idle");
-  site.classList.add("enter");
-  document.body.style.overflow = "";
-  cover.classList.add("is-gone");
-  await wait(1100);
-  cover.hidden = true;
-  if (seaCover) { seaCover.active = false; seaCover.renderer.dispose(); }
-}
-$("#env").addEventListener("click", openInvitation);
+// Apparition douce des sections au défilement
+app.directive("reveal", {
+  mounted(el) {
+    if (!("IntersectionObserver" in window)) { el.classList.add("in"); return; }
+    const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { threshold: .15 });
+    io.observe(el);
+  }
+});
+app.mount("#app");
 </script>
+</body>
+</html>

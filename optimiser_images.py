@@ -82,6 +82,13 @@ for name, out_name, max_w in [("Leaf-03.png", "leaf-03", 600), ("Leaf-06.png", "
     else:
         print(f"  manquant : {src}")
 
+print("\nCouple de mariés (aquarelle, fond transparent) :")
+couple = BELLS / "couple-maries.webp"
+if couple.exists():
+    save(fit(trim(Image.open(couple).convert("RGBA")), 760), "couple", quality=88)
+else:
+    print("  manquant : img/bells/couple-maries.webp — la scène « Main dans la main » n'affichera pas le couple")
+
 print("\nIllustrations ChatGPT (img/art/) :")
 arche = next((p for p in (ART / "arche.png", ART / "arche.jpg", ART / "arche.webp") if p.exists()), None)
 if arche:
