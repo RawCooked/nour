@@ -15,7 +15,7 @@ import shutil
 from pathlib import Path
 
 import numpy as np
-from PIL import Image
+from PIL import Image, ImageFilter
 
 ROOT = Path(__file__).parent
 SRC = ROOT / "img" / "story"
@@ -88,6 +88,71 @@ if couple.exists():
     save(fit(trim(Image.open(couple).convert("RGBA")), 760), "couple", quality=88)
 else:
     print("  manquant : img/bells/couple-maries.webp — la scène « Main dans la main » n'affichera pas le couple")
+
+print("\nCouple qui danse (planche de 30 images, 6 colonnes x 5 lignes) :")
+
+
+def runs(profile):
+    out, start = [], None
+    for i, v in enumerate(profile):
+        if v and start is None:
+            start = i
+        elif not v and start is not None:
+            out.append((start, i)); start = None
+    if start is not None:
+        out.append((start, len(profile)))
+    return out
+
+
+def couple_danse(src, cols=6, rows=5):
+    """Découpe la planche (les couples sont séparés par du vide), puis cale chaque image sur les chaussures
+    du marié (il reste en place, c'est la mariée qui tourne) : les 30 images tiennent dans des cases identiques."""
+    sheet = Image.open(src).convert("RGBA")
+    alpha = np.asarray(sheet.getchannel("A")) > 10
+    bands = runs(alpha.any(axis=1))
+    if len(bands) != rows:
+        print(f"  planche inattendue : {len(bands)} lignes au lieu de {rows}")
+        return
+    frames = []
+    for y0, y1 in bands:
+        cells = runs(alpha[y0:y1].any(axis=0))
+        if len(cells) != cols:
+            print(f"  planche inattendue : {len(cells)} colonnes au lieu de {cols}")
+            return
+        for x0, x1 in cells:
+            im = sheet.crop((x0, y0, x1, y1))
+            a = np.asarray(im).astype(np.float32)
+            dark = (a[..., 3] > 128) & (a[..., :3].mean(axis=2) < 95)      # costume et chaussures du marié
+            top = int(im.height * 0.65)
+            ys, xs = np.nonzero(dark[top:])
+            ys = ys + top
+            foot = ys.max()
+            ax = xs[ys > foot - 0.08 * im.height].mean()                    # pieds du marié
+            frames.append((im, ax, foot))
+    left = max(f[1] for f in frames)
+    right = max(f[0].width - f[1] for f in frames)
+    up = max(f[2] for f in frames)
+    down = max(f[0].height - f[2] for f in frames)
+    pad = 6
+    cw, ch = int(np.ceil(left + right)) + 2 * pad, int(np.ceil(up + down)) + 2 * pad
+    atlas = Image.new("RGBA", (cw * cols, ch * rows), (0, 0, 0, 0))
+    for i, (im, ax, foot) in enumerate(frames):
+        ox = (i % cols) * cw + pad + round(left - ax)
+        oy = (i // cols) * ch + pad + round(up - foot)
+        atlas.paste(im, (ox, oy))
+    # La planche source est petite (~180 px par image) : on agrandit avec un filtre doux + un peu de netteté,
+    # c'est plus propre que l'agrandissement brut du navigateur.
+    atlas = atlas.resize((atlas.width * 2, atlas.height * 2), Image.LANCZOS).filter(ImageFilter.UnsharpMask(1.4, 70, 2))
+    cw, ch = cw * 2, ch * 2
+    save(atlas, "couple-danse", quality=78)
+    print(f"  {len(frames)} images de {cw}x{ch} px ; chaussures du marié à {(down * 2 + pad * 2) / ch:.4f} du bas de la case (DANCE_SHOE dans index.html)")
+
+
+dance = ART / "couple-danse-sprite.webp"
+if dance.exists():
+    couple_danse(dance)
+else:
+    print("  manquant : img/art/couple-danse-sprite.webp — la scène utilisera le couple immobile")
 
 print("\nIllustrations ChatGPT (img/art/) :")
 arche = next((p for p in (ART / "arche.png", ART / "arche.jpg", ART / "arche.webp") if p.exists()), None)

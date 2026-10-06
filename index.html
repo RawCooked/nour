@@ -316,7 +316,7 @@
         <h1 class="names"><span>{{ C.bride }}</span><span class="amp">&amp;</span><span>{{ C.groom }}</span></h1>
         <div class="orn" aria-hidden="true"><i></i><span class="ink pap-a"></span><i></i></div>
         <p class="invite-line">{{ C.inviteLine }}</p>
-        <p class="when">{{ longDate }}<br>{{ hhmm }} · {{ C.venue }}</p>
+        <p class="when">{{ longDate }}<br>{{ C.venue }}</p>
         <a class="scroll-cue caps" href="#lieu">Découvrir</a>
       </div>
     </header>
@@ -548,21 +548,20 @@ void main(){
   gl_FragColor = vec4(col, 1.0);
 }`;
 
-/* Le couple : légère respiration, l'ourlet de la robe ondule, lumière chaude du couchant.
+/* Le couple : planche de 30 images (valse), lue en boucle.
    La texture est pré-multipliée : pas de liseré sombre sur les bords de l'aquarelle. */
 const COUPLE_VERT = `
-uniform float uTime; varying vec2 vUv;
-void main(){
-  vUv = uv; vec3 p = position;
-  float hem = smoothstep(0.36, 0.0, uv.y);
-  p.x += sin(uTime * 1.25 + uv.y * 7.0) * 0.008 * hem;
-  p.y += sin(uTime * 0.9) * 0.0035;
-  gl_Position = projectionMatrix * modelViewMatrix * vec4(p, 1.0);
-}`;
+varying vec2 vUv;
+void main(){ vUv = uv; gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0); }`;
 const COUPLE_FRAG = `
-uniform sampler2D uMap; varying vec2 vUv;
+uniform sampler2D uMap; uniform vec2 uGrid; uniform float uFrame; varying vec2 vUv;
+vec4 cell(float f){
+  f = mod(f, uGrid.x * uGrid.y);
+  vec2 c = vec2(mod(f, uGrid.x), uGrid.y - 1.0 - floor(f / uGrid.x));
+  return texture2D(uMap, (c + vUv) / uGrid);
+}
 void main(){
-  vec4 t = texture2D(uMap, vUv);
+  vec4 t = cell(floor(uFrame));   // images nettes, sans fondu (un fondu dédoublerait les visages)
   float warm = smoothstep(0.0, 1.0, vUv.x * 0.7 + vUv.y * 0.3);
   t.rgb *= mix(vec3(1.0), vec3(1.07, 0.95, 0.86), warm * 0.6);
   gl_FragColor = t;
@@ -691,6 +690,7 @@ function makeEngine() {
   }
 
   // La scène « Main dans la main » : plage, couple aquarelle, chien qui se promène, lucioles dorées
+  const DANCE_COLS = 6, DANCE_ROWS = 5, DANCE_FPS = 10, DANCE_SHOE = 0.0677;   // la planche img/web/couple-danse.webp : 30 images
   function makeStage(canvas, onFail) {
     if (!window.THREE) return null;
     try {
@@ -711,10 +711,10 @@ function makeEngine() {
       const coupleShadow = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), shadowMat(0.30)); coupleShadow.renderOrder = 1; scene.add(coupleShadow);
       const dogShadow = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), shadowMat(0.28)); dogShadow.renderOrder = 1; scene.add(dogShadow);
 
-      const coupleMat = new THREE.ShaderMaterial({ ...flat, uniforms: { uMap: { value: null }, uTime: U.uTime }, vertexShader: COUPLE_VERT, fragmentShader: COUPLE_FRAG });
-      const couple = new THREE.Mesh(new THREE.PlaneGeometry(1, 1, 4, 24), coupleMat);
+      const coupleMat = new THREE.ShaderMaterial({ ...flat, uniforms: { uMap: { value: null }, uGrid: { value: new THREE.Vector2(6, 5) }, uFrame: { value: 0 } }, vertexShader: COUPLE_VERT, fragmentShader: COUPLE_FRAG });
+      const couple = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), coupleMat);
       couple.renderOrder = 2; couple.visible = false; scene.add(couple);
-      let coupleAspect = 0.569;
+      let coupleAspect = 0.8;
 
       const dogTex = dogTexture();
       const dogMat = new THREE.ShaderMaterial({ ...flat, uniforms: { uMap: { value: dogTex.tex }, uColor: { value: new THREE.Color(0.11, 0.20, 0.27) }, uAlpha: { value: 1.0 }, uWalk: { value: 0 }, uTime: U.uTime }, vertexShader: DOG_VERT, fragmentShader: DOG_FRAG });
@@ -745,10 +745,11 @@ function makeEngine() {
       const st = { W: 1, H: 1, dogX: 0, dir: -1, dw: 100, dh: 100, speed: 60 };
       const s = { canvas, renderer, scene, camera, uniforms: U, visible: false, active: true, dirty: true, ready: false };
 
-      new THREE.TextureLoader().load("img/web/couple.webp", tex => {
-        tex.premultiplyAlpha = true; tex.minFilter = THREE.LinearMipmapLinearFilter; tex.anisotropy = 4; tex.needsUpdate = true;
+      new THREE.TextureLoader().load("img/web/couple-danse.webp", tex => {
+        // planche de COLS x ROWS images : pas de mipmaps (elles mélangeraient les cases voisines)
+        tex.premultiplyAlpha = true; tex.generateMipmaps = false; tex.minFilter = THREE.LinearFilter; tex.needsUpdate = true;
         coupleMat.uniforms.uMap.value = tex;
-        coupleAspect = tex.image.width / tex.image.height;
+        coupleAspect = (tex.image.width / DANCE_COLS) / (tex.image.height / DANCE_ROWS);
         couple.visible = true; s.ready = true; layout(); s.dirty = true;
       }, undefined, () => { if (onFail) onFail(); });
 
@@ -763,9 +764,9 @@ function makeEngine() {
         const ch = H * (narrow ? 0.60 : 0.66), cw = ch * coupleAspect;
         couple.scale.set(cw, ch, 1);
         couple.userData.baseX = W * (narrow ? 0.5 : 0.5);
-        couple.position.set(couple.userData.baseX, H * 0.115 + ch / 2, 0);
+        couple.position.set(couple.userData.baseX, H * 0.125 + ch * (0.5 - DANCE_SHOE), 0);
         coupleShadow.scale.set(cw * 0.95, H * 0.045, 1);
-        coupleShadow.position.set(couple.userData.baseX, H * 0.112, 0);
+        coupleShadow.position.set(couple.userData.baseX, H * 0.12, 0);
         st.dh = Math.min(Math.max(ch * 0.27, 92), 170);   // un chien mesure environ un tiers de la taille d'un adulte
         st.dw = st.dh * dogTex.aspect;
         dog.scale.set(st.dw * (st.dir < 0 ? 1 : -1), st.dh, 1);
@@ -785,8 +786,8 @@ function makeEngine() {
         // (au montage, la page est encore masquée par v-cloak : la scène mesure 0 px).
         if (!st.placed && st.W > 50) { st.dogX = reduced ? st.W * 0.2 : st.W + st.dw * 0.6; st.placed = true; }
         if (!st.placed) return;
-        couple.position.x = couple.userData.baseX + par.x * 12 + (reduced ? 0 : Math.sin(t * 0.55) * 1.4);
-        couple.rotation.z = reduced ? 0 : Math.sin(t * 0.5) * 0.0035;
+        couple.position.x = couple.userData.baseX + par.x * 12;
+        coupleMat.uniforms.uFrame.value = reduced ? 0 : t * DANCE_FPS;
         coupleShadow.position.x = couple.position.x;
         if (!reduced) {
           st.dogX += st.dir * st.speed * dt;
