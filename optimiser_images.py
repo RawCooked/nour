@@ -104,6 +104,17 @@ def runs(profile):
     return out
 
 
+def agrandir(im, k):
+    a = np.asarray(im.convert("RGBA")).astype(np.float32) / 255
+    a[..., :3] *= a[..., 3:4]
+    big = Image.fromarray((a * 255).round().astype(np.uint8), "RGBA").resize((im.width * k, im.height * k), Image.LANCZOS)
+    rgb = Image.fromarray(np.asarray(big)[..., :3].copy(), "RGB").filter(ImageFilter.UnsharpMask(1.4, 70, 2))
+    out = np.asarray(big).astype(np.float32) / 255
+    out[..., :3] = np.minimum(np.asarray(rgb).astype(np.float32) / 255, out[..., 3:4])
+    out[..., :3] /= np.maximum(out[..., 3:4], 1e-4)
+    return Image.fromarray((np.clip(out, 0, 1) * 255).round().astype(np.uint8), "RGBA")
+
+
 def couple_danse(src, cols=6, rows=5):
     """Découpe la planche (les couples sont séparés par du vide), puis cale chaque image sur les chaussures
     du marié (il reste en place, c'est la mariée qui tourne) : les 30 images tiennent dans des cases identiques."""
@@ -141,8 +152,9 @@ def couple_danse(src, cols=6, rows=5):
         oy = (i // cols) * ch + pad + round(up - foot)
         atlas.paste(im, (ox, oy))
     # La planche source est petite (~180 px par image) : on agrandit avec un filtre doux + un peu de netteté,
-    # c'est plus propre que l'agrandissement brut du navigateur.
-    atlas = atlas.resize((atlas.width * 2, atlas.height * 2), Image.LANCZOS).filter(ImageFilter.UnsharpMask(1.4, 70, 2))
+    # c'est plus propre que l'agrandissement brut du navigateur. Tout se fait en alpha pré-multiplié
+    # (sinon le noir caché sous le transparent bave en liseré sombre sur les bords).
+    atlas = agrandir(atlas, 2)
     cw, ch = cw * 2, ch * 2
     save(atlas, "couple-danse", quality=78)
     print(f"  {len(frames)} images de {cw}x{ch} px ; chaussures du marié à {(down * 2 + pad * 2) / ch:.4f} du bas de la case (DANCE_SHOE dans index.html)")
@@ -153,6 +165,46 @@ if dance.exists():
     couple_danse(dance)
 else:
     print("  manquant : img/art/couple-danse-sprite.webp — la scène utilisera le couple immobile")
+
+print("\nChien qui marche (planche de 12 images, 4 colonnes x 3 lignes) :")
+
+
+def chien_marche(src, cols=4, rows=3):
+    """Même principe que le couple : découpe, puis cale chaque image (pattes au sol, corps centré)."""
+    sheet = Image.open(src).convert("RGBA")
+    alpha = np.asarray(sheet.getchannel("A")) > 10
+    bands = runs(alpha.any(axis=1))
+    if len(bands) != rows:
+        print(f"  planche inattendue : {len(bands)} lignes au lieu de {rows}")
+        return
+    frames = []
+    for y0, y1 in bands:
+        cells = runs(alpha[y0:y1].any(axis=0))
+        if len(cells) != cols:
+            print(f"  planche inattendue : {len(cells)} colonnes au lieu de {cols}")
+            return
+        for x0, x1 in cells:
+            im = sheet.crop((x0, y0, x1, y1))
+            al = np.asarray(im.getchannel("A")) > 128
+            xs = np.nonzero(al[: int(im.height * 0.55)])[1]       # tête, dos, queue : ne bougent presque pas
+            frames.append((im, xs.mean(), im.height - 1))
+    left = max(f[1] for f in frames)
+    right = max(f[0].width - f[1] for f in frames)
+    up = max(f[2] for f in frames)
+    pad = 4
+    cw, ch = int(np.ceil(left + right)) + 2 * pad, int(np.ceil(up)) + 1 + 2 * pad
+    atlas = Image.new("RGBA", (cw * cols, ch * rows), (0, 0, 0, 0))
+    for i, (im, ax, foot) in enumerate(frames):
+        atlas.paste(im, ((i % cols) * cw + pad + round(left - ax), (i // cols) * ch + pad + round(up - foot)))
+    save(atlas, "chien-marche", quality=88)
+    print(f"  {len(frames)} images de {cw}x{ch} px ; pattes à {pad / ch:.4f} du bas de la case (DOG_PAW dans index.html)")
+
+
+walk = ART / "chien-marche-sprite.webp"
+if walk.exists():
+    chien_marche(walk)
+else:
+    print("  manquant : img/art/chien-marche-sprite.webp — la scène n'affichera pas le chien")
 
 print("\nIllustrations ChatGPT (img/art/) :")
 arche = next((p for p in (ART / "arche.png", ART / "arche.jpg", ART / "arche.webp") if p.exists()), None)
