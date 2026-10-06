@@ -199,27 +199,58 @@ if dance.exists():
 else:
     print("  manquant : img/art/couple-danse-sprite.webp — la scène utilisera le couple immobile")
 
-print("\nChien qui marche (planche de 12 images, 4 colonnes x 3 lignes) :")
+print("\nAnimaux qui traversent la plage (planches de 9 images, 3 colonnes x 3 lignes) :")
 
 
-def chien_marche(src, cols=4, rows=3):
-    """Même principe que le couple : découpe, puis cale chaque image (pattes au sol, corps centré)."""
-    sheet = Image.open(src).convert("RGBA")
-    alpha = np.asarray(sheet.getchannel("A")) > 10
+def detourer(im, ombre=False):
+    """Planche à fond uni (aperçu JPEG/PNG sans transparence) : le fond devient transparent.
+    Si la planche a déjà de la transparence, on n'y touche pas."""
+    im = im.convert("RGBA")
+    a = np.asarray(im).astype(np.float32)
+    if a[..., 3].min() < 250:
+        return im
+    h, w, _ = a.shape
+    bord = np.concatenate([a[0, :, :3], a[-1, :, :3], a[:, 0, :3], a[:, -1, :3]])
+    fond = np.median(bord, axis=0)
+    dist = np.abs(a[..., :3] - fond).max(axis=2)
+    alpha = np.clip((dist - 30) / 34, 0, 1)
+    rgb = a[..., :3]
+    if ombre:
+        # ombre portée sous l'animal : tons moyens, loin de toute zone sombre -> on la retire (la scène a la sienne)
+        lum = rgb.mean(axis=2)
+        sombre = Image.fromarray(((lum < 110) * 255).astype(np.uint8)).filter(ImageFilter.MaxFilter(9))
+        pres = np.asarray(sombre) > 0
+        alpha[(lum > 140) & (lum < 212) & ~pres] = 0
+    # défrange : on retire la part de couleur de fond qui reste dans les bords translucides
+    col = (rgb - (1 - alpha[..., None]) * fond) / np.maximum(alpha[..., None], 0.05)
+    col = np.clip(np.where(alpha[..., None] > 0.05, col, rgb), 0, 255)
+    return Image.fromarray(np.dstack([col, alpha * 255]).astype(np.uint8), "RGBA")
+
+
+def animal(src, name, cols=3, rows=3, agrandi=1, ombre=False):
+    """Découpe une planche de marche/course (les images sont séparées par du vide), cale chaque image
+    (pattes au sol, corps centré) et range le tout en atlas."""
+    sheet = detourer(Image.open(src), ombre)
+    alpha = np.asarray(sheet.getchannel("A")) > 40
     bands = runs(alpha.any(axis=1))
+    # miettes (filigrane, bords) : on ignore les bandes minuscules
+    bands = [b for b in bands if b[1] - b[0] > 0.04 * sheet.height]
     if len(bands) != rows:
-        print(f"  planche inattendue : {len(bands)} lignes au lieu de {rows}")
+        print(f"  {name} : {len(bands)} lignes au lieu de {rows}")
         return
     frames = []
     for y0, y1 in bands:
-        cells = runs(alpha[y0:y1].any(axis=0))
+        cells = [c for c in runs(alpha[y0:y1].any(axis=0)) if c[1] - c[0] > 0.04 * sheet.width]
         if len(cells) != cols:
-            print(f"  planche inattendue : {len(cells)} colonnes au lieu de {cols}")
+            print(f"  {name} : {len(cells)} colonnes au lieu de {cols}")
             return
         for x0, x1 in cells:
             im = sheet.crop((x0, y0, x1, y1))
             al = np.asarray(im.getchannel("A")) > 128
-            xs = np.nonzero(al[: int(im.height * 0.55)])[1]       # tête, dos, queue : ne bougent presque pas
+            ys = np.nonzero(al.any(axis=1))[0]
+            im = im.crop((0, ys.min(), im.width, ys.max() + 1))
+            al = al[ys.min(): ys.max() + 1]
+            xs = np.nonzero(al[: max(1, int(al.shape[0] * 0.55))])[1]     # tête, dos, queue
             frames.append((im, xs.mean(), im.height - 1))
     left = max(f[1] for f in frames)
     right = max(f[0].width - f[1] for f in frames)
@@ -229,15 +260,20 @@ def chien_marche(src, cols=4, rows=3):
     atlas = Image.new("RGBA", (cw * cols, ch * rows), (0, 0, 0, 0))
     for i, (im, ax, foot) in enumerate(frames):
         atlas.paste(im, ((i % cols) * cw + pad + round(left - ax), (i // cols) * ch + pad + round(up - foot)))
-    save(atlas, "chien-marche", quality=88)
-    print(f"  {len(frames)} images de {cw}x{ch} px ; pattes à {pad / ch:.4f} du bas de la case (DOG_PAW dans index.html)")
+    if agrandi > 1:
+        atlas = agrandir(atlas, agrandi)
+        cw, ch = cw * agrandi, ch * agrandi
+    save(atlas, name, quality=88)
+    print(f"  {len(frames)} images de {cw}x{ch} px ; pattes à {pad * agrandi / ch:.4f} du bas de la case (paw de {name} dans index.html)")
 
 
-walk = ART / "chien-marche-sprite.webp"
-if walk.exists():
-    chien_marche(walk)
-else:
-    print("  manquant : img/art/chien-marche-sprite.webp — la scène n'affichera pas le chien")
+for fichier, nom, opts in (("chien-or-sprite", "chien-or", {}), ("chat-sprite", "chat", {"ombre": True, "agrandi": 2}),
+                           ("chien-marche-sprite", "chien-marche", {"cols": 4, "rows": 3})):
+    src = next((q for q in (ART / f"{fichier}.png", ART / f"{fichier}.webp") if q.exists()), None)
+    if src:
+        animal(src, nom, **opts)
+    else:
+        print(f"  manquant : img/art/{fichier}.png")
 
 print("\nIllustrations ChatGPT (img/art/) :")
 arche = next((p for p in (ART / "arche.png", ART / "arche.jpg", ART / "arche.webp") if p.exists()), None)

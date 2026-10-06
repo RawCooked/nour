@@ -29,6 +29,7 @@ jobs:
           mkdir -p dist/img
           cp index.html dist/
           cp -r img/web dist/img/web
+          python construire_ar.py dist/ar
 
       - name: Envoyer sur le VPS
         env:

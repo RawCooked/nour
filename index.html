@@ -12,7 +12,8 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='29' fill='%23fbf7f1' stroke='%23b08d57' stroke-width='3'/%3E%3Ctext x='32' y='41' font-family='Georgia,serif' font-style='italic' font-size='26' text-anchor='middle' fill='%231c3344'%3ENA%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;1,6..96,400&family=Jost:wght@300;400&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Aref+Ruqaa:wght@400;700&family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;1,6..96,400&family=Jost:wght@300;400&display=swap">
+<script>window.LANG_DEFAULT = "fr";</script>
 <style>
   /* Concept « finesse » : ivoire, encre bleu nuit, filets dorés, une seule touche corail.
      La mer au coucher du soleil est une scène three.js (shader) vue à travers une arche ;
@@ -36,6 +37,27 @@
   body { margin: 0; background: var(--ivory); color: var(--ink); font-family: var(--font-body); font-weight: 300; font-size: 1.05rem; line-height: 1.65; overflow-x: hidden; }
   img { max-width: 100%; height: auto; display: block; }
   a { color: inherit; }
+
+
+  /* ---- Version arabe (RTL) : calligraphie Aref Ruqaa pour les titres, Amiri pour le texte.
+     En arabe, l'espacement des lettres, les capitales et l'italique cassent l'écriture : on les coupe. ---- */
+  .lang { position: fixed; z-index: 30; top: calc(12px + env(safe-area-inset-top, 0px)); inset-inline-start: 16px; display: inline-flex; align-items: center;
+          min-height: 36px; padding: 0 14px; border: 1px solid var(--gold); border-radius: 999px; background: rgba(251,247,241,.82); -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+          color: var(--ink); text-decoration: none; font-size: .82rem; letter-spacing: .08em; }
+  .lang:focus-visible { outline: 2px solid var(--coral); outline-offset: 3px; }
+  html[lang="ar"] { --font-display: "Aref Ruqaa", "Amiri", "Traditional Arabic", serif; --font-body: "Amiri", "Traditional Arabic", serif; }
+  html[lang="ar"] body { font-weight: 400; font-size: 1.15rem; line-height: 1.9; }
+  html[lang="ar"] * { letter-spacing: 0 !important; text-transform: none !important; font-style: normal !important; }
+  html[lang="ar"] .lang { font-size: 1rem; }
+  html[lang="ar"] .caps { font-size: 1rem; font-weight: 400; }
+  html[lang="ar"] .names { line-height: 1.45; font-weight: 400; }
+  html[lang="ar"] .names .amp { font-size: .5em; }
+  html[lang="ar"] .section h2, html[lang="ar"] .stage-line, html[lang="ar"] .closing .s, html[lang="ar"] .invite-line { line-height: 1.6; }
+  html[lang="ar"] .cover-names { font-size: 2.1rem; line-height: 1.5; }
+  html[lang="ar"] .btn { font-size: 1rem; }
+  html[lang="ar"] .when { font-size: 1.1rem; line-height: 2; }
+  html[lang="ar"] .place .addr { font-size: 1.1rem; }
+  html[lang="ar"] .timeline .what { font-size: 1.1rem; }
 
   .caps { font-size: .72rem; font-weight: 400; letter-spacing: .36em; text-transform: uppercase; color: var(--muted); }
   .rule { width: 48px; height: 1px; background: var(--gold); opacity: .8; }
@@ -243,6 +265,7 @@
     <p>ont la joie de vous inviter à célébrer leur mariage</p>
     <p><strong>Dimanche 18 octobre 2026, de 18h à 21h</strong></p>
     <p>Activez JavaScript pour découvrir l’invitation complète.</p>
+    <p dir="rtl" lang="ar">يرجى تفعيل جافاسكربت لعرض الدعوة كاملة.</p>
   </main>
 </noscript>
 
@@ -251,6 +274,7 @@
     <symbol id="star" viewBox="0 0 24 24"><path fill="currentColor" d="M12 0c.6 6.4 5.6 11.4 12 12-6.4.6-11.4 5.6-12 12-.6-6.4-5.6-11.4-12-12C6.4 11.4 11.4 6.4 12 0Z"/></symbol>
   </svg>
   <div class="frame" aria-hidden="true"></div>
+  <a class="lang" :href="langHref" :hreflang="t.otherLang" :lang="t.otherLang" :aria-label="t.switchLabel">{{ t.switch }}</a>
   <canvas class="dust" id="dust" aria-hidden="true"></canvas>
 
   <!-- ============ ENVELOPPE ============ -->
@@ -265,29 +289,29 @@
     <span class="ink lf9 deco sway" style="width:min(30vw,170px);left:-4%;bottom:6%;--c:#fffaf1;--r:12deg;opacity:.55" aria-hidden="true"></span>
     <span class="ink lf10 deco sway" style="width:min(24vw,140px);right:-3%;top:22%;--c:#fffaf1;--r:-20deg;--t:8s;opacity:.5" aria-hidden="true"></span>
     <div class="cover-inner">
-      <div class="crest" aria-hidden="true"><span class="ink lf6 l" style="--c:var(--ink)"></span><span class="mono">N<i>&amp;</i>A</span><span class="ink lf6 r" style="--c:var(--ink)"></span></div>
-      <span class="caps">Vous êtes invités</span>
+      <div class="crest" aria-hidden="true"><span class="ink lf6 l" style="--c:var(--ink)"></span><span class="mono">{{ C.bride[0] }}<i>&amp;</i>{{ C.groom[0] }}</span><span class="ink lf6 r" style="--c:var(--ink)"></span></div>
+      <span class="caps">{{ t.invited }}</span>
       <p class="cover-names">{{ couple }}</p>
-      <p class="cover-guest" v-if="guest">Pour {{ guest }}</p>
+      <p class="cover-guest" v-if="guest">{{ t.forGuest }} {{ guest }}</p>
       <div class="env" id="env" @click="open">
         <div class="env-shadow"></div>
         <div class="env-back"></div>
         <div class="env-card" aria-hidden="true">
-          <span class="caps">Save the date</span>
+          <span class="caps">{{ t.save }}</span>
           <span class="n">{{ couple }}</span>
         </div>
         <div class="env-front"></div>
         <div class="env-flap"></div>
         <div class="rest" style="--w:30px;right:10%;top:-14px" aria-hidden="true"><span class="ink wing pap-a" style="--c:var(--gold)"></span></div>
-        <button class="seal" id="seal" type="button" aria-label="Ouvrir l'invitation">{{ C.bride[0] }} {{ C.groom[0] }}</button>
+        <button class="seal" id="seal" type="button" :aria-label="t.openLabel">{{ C.bride[0] }} {{ C.groom[0] }}</button>
       </div>
-      <p class="caps cover-hint">Touchez le sceau</p>
+      <p class="caps cover-hint">{{ t.touch }}</p>
     </div>
   </div>
 
   <!-- ============ LE SITE ============ -->
   <div class="site" :class="siteState" id="site">
-    <button class="music" type="button" v-show="musicShown" :aria-label="musicOn ? 'Couper la musique' : 'Lancer la musique'" :style="{ opacity: musicOn ? 1 : .55 }" @click="toggleMusic">
+    <button class="music" type="button" v-show="musicShown" :aria-label="musicOn ? t.musicOff : t.musicOn" :style="{ opacity: musicOn ? 1 : .55 }" @click="toggleMusic">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg>
     </button>
 
@@ -299,7 +323,7 @@
         <span class="ink lune" aria-hidden="true"></span>
         <div class="arch" id="arch">
           <div class="sea-fallback"></div>
-          <canvas class="sea" id="seaHero" role="img" aria-label="La mer au coucher du soleil"></canvas>
+          <canvas class="sea" id="seaHero" role="img" :aria-label="t.seaAlt"></canvas>
         </div>
         <span class="arch-line" aria-hidden="true"></span>
         <span class="arch-line outer" aria-hidden="true"></span>
@@ -311,52 +335,52 @@
       </div>
 
       <div class="hero-text">
-        <div class="crest" aria-hidden="true"><span class="ink lf6 l"></span><span class="mono">N<i>&amp;</i>A</span><span class="ink lf6 r"></span></div>
-        <span class="caps">Save the date</span>
+        <div class="crest" aria-hidden="true"><span class="ink lf6 l"></span><span class="mono">{{ C.bride[0] }}<i>&amp;</i>{{ C.groom[0] }}</span><span class="ink lf6 r"></span></div>
+        <span class="caps">{{ t.save }}</span>
         <h1 class="names"><span>{{ C.bride }}</span><span class="amp">&amp;</span><span>{{ C.groom }}</span></h1>
         <div class="orn" aria-hidden="true"><i></i><span class="ink pap-a"></span><i></i></div>
         <p class="invite-line">{{ C.inviteLine }}</p>
         <p class="when">{{ longDate }}<br>{{ C.venue }}</p>
-        <a class="scroll-cue caps" href="#lieu">Découvrir</a>
+        <a class="scroll-cue caps" href="#lieu">{{ t.discover }}</a>
       </div>
     </header>
 
-    <section class="section" v-reveal aria-label="Verset">
+    <section class="section" v-reveal :aria-label="t.verseLabel">
       <span class="ink lf10 deco sway" style="width:min(22vw,120px);left:2%;top:30%;--r:20deg" aria-hidden="true"></span>
       <span class="ink lf3 deco sway" style="width:min(24vw,130px);right:0;bottom:12%;--r:-150deg;--t:8s" aria-hidden="true"></span>
       <div class="verse">
         <span class="ink lune" aria-hidden="true"></span>
         <p class="ar" lang="ar" dir="rtl">وَمِنْ آيَاتِهِ أَنْ خَلَقَ لَكُم مِّنْ أَنفُسِكُمْ أَزْوَاجًا لِّتَسْكُنُوا إِلَيْهَا وَجَعَلَ بَيْنَكُم مَّوَدَّةً وَرَحْمَةً</p>
-        <p class="fr">« Et parmi Ses signes, Il a créé pour vous des épouses afin que vous trouviez auprès d’elles la quiétude, et Il a mis entre vous de l’affection et de la bonté. »</p>
-        <span class="caps">Ar-Rûm · 30:21</span>
+        <p class="fr" v-if="LANG === 'fr'">« Et parmi Ses signes, Il a créé pour vous des épouses afin que vous trouviez auprès d’elles la quiétude, et Il a mis entre vous de l’affection et de la bonté. »</p>
+        <span class="caps">{{ t.verseRef }}</span>
       </div>
     </section>
 
     <section class="section" v-reveal aria-labelledby="h-count">
       <div class="orn" aria-hidden="true"><i></i><span class="ink pap-b"></span><i></i></div>
-      <span class="caps" id="h-count">Le grand jour dans</span>
-      <div class="countdown" v-if="!left.done" role="group" :aria-label="'Compte à rebours : ' + left.d + ' jours, ' + left.h + ' heures'">
-        <div><strong>{{ left.d }}</strong><span class="caps">jours</span></div>
-        <div><strong>{{ left.h }}</strong><span class="caps">heures</span></div>
-        <div><strong>{{ left.m }}</strong><span class="caps">min</span></div>
-        <div><strong>{{ left.s }}</strong><span class="caps">sec</span></div>
+      <span class="caps" id="h-count">{{ t.countIn }}</span>
+      <div class="countdown" v-if="!left.done" role="group" :aria-label="t.countAria(left)">
+        <div><strong>{{ left.d }}</strong><span class="caps">{{ t.days }}</span></div>
+        <div><strong>{{ left.h }}</strong><span class="caps">{{ t.hours }}</span></div>
+        <div><strong>{{ left.m }}</strong><span class="caps">{{ t.min }}</span></div>
+        <div><strong>{{ left.s }}</strong><span class="caps">{{ t.sec }}</span></div>
       </div>
-      <p class="countdown-done" v-else>C’est aujourd’hui</p>
+      <p class="countdown-done" v-else>{{ t.today }}</p>
     </section>
 
     <section class="section" v-reveal id="lieu" aria-labelledby="h-lieu">
       <div class="rest" style="--w:30px;right:12%;top:60px" aria-hidden="true"><span class="ink wing pap-a" style="--c:var(--gold)"></span></div>
       <span class="ink lf9 deco sway" style="width:min(20vw,110px);left:1%;top:9%;--r:16deg" aria-hidden="true"></span>
       <div class="orn" aria-hidden="true"><i></i><span class="ink pap-a"></span><i></i></div>
-      <span class="caps">Où &amp; quand</span>
-      <h2 id="h-lieu">La soirée</h2>
+      <span class="caps">{{ t.whereWhen }}</span>
+      <h2 id="h-lieu">{{ t.evening }}</h2>
       <div class="place">
         <p class="when">{{ longDate }}<br>{{ hhmm }}</p>
         <p class="venue">{{ C.venue }}</p>
         <p class="addr">{{ C.address }}</p>
         <div class="btns">
-          <a class="btn" :href="C.maps" target="_blank" rel="noopener">Itinéraire</a>
-          <a class="btn solid" :href="calHref" target="_blank" rel="noopener">Agenda</a>
+          <a class="btn" :href="C.maps" target="_blank" rel="noopener">{{ t.directions }}</a>
+          <a class="btn solid" :href="calHref" target="_blank" rel="noopener">{{ t.calendar }}</a>
         </div>
       </div>
     </section>
@@ -365,8 +389,8 @@
       <div class="rest" style="--w:26px;left:12%;top:70px;--delay:-2s" aria-hidden="true"><span class="ink wing pap-b" style="--c:var(--coral)"></span></div>
       <span class="ink lf10 deco sway" style="width:min(20vw,110px);right:1%;top:12%;--r:-24deg;--t:8s" aria-hidden="true"></span>
       <div class="orn" aria-hidden="true"><i></i><span class="ink lune" style="width:16px"></span><i></i></div>
-      <span class="caps">Le déroulé</span>
-      <h2 id="h-prog">Programme</h2>
+      <span class="caps">{{ t.schedule }}</span>
+      <h2 id="h-prog">{{ t.programme }}</h2>
       <ol class="timeline">
         <li v-for="step in C.programme" :key="step.time"><span class="t">{{ step.time }}</span><span class="what">{{ step.what }}</span></li>
       </ol>
@@ -374,11 +398,11 @@
 
     <!-- Main dans la main : scène three.js (plage, couple, chien) -->
     <section class="stage" id="mariés" aria-labelledby="h-stage">
-      <div class="stage-fallback" v-if="!stageOk"><img src="img/web/couple.webp" alt="Nour et Aissam se tiennent par le bras" width="380" height="668"></div>
-      <canvas class="stage-canvas" id="stage" role="img" aria-label="Au coucher du soleil, sur la plage, Nour et Aissam se tiennent par le bras ; un chien se promène devant eux."></canvas>
+      <div class="stage-fallback" v-if="!stageOk"><img src="img/web/couple.webp" :alt="t.stageAlt" width="380" height="668"></div>
+      <canvas class="stage-canvas" id="stage" role="img" :aria-label="t.stageAria"></canvas>
       <div class="stage-text">
-        <span class="caps" id="h-stage">Main dans la main</span>
-        <h2 class="stage-line">pour toute une vie</h2>
+        <span class="caps" id="h-stage">{{ t.handInHand }}</span>
+        <h2 class="stage-line">{{ t.forLife }}</h2>
       </div>
     </section>
 
@@ -387,7 +411,7 @@
       <span class="ink lf9 deco sway" style="width:min(22vw,120px);right:3%;bottom:10%;--r:-10deg;transform:scaleX(-1);--t:8s" aria-hidden="true"></span>
       <span class="ink filante" aria-hidden="true"></span>
       <p class="s">{{ C.closing }}</p>
-      <div class="crest" aria-hidden="true"><span class="ink lf6 l"></span><span class="mono">N<i>&amp;</i>A</span><span class="ink lf6 r"></span></div>
+      <div class="crest" aria-hidden="true"><span class="ink lf6 l"></span><span class="mono">{{ C.bride[0] }}<i>&amp;</i>{{ C.groom[0] }}</span><span class="ink lf6 r"></span></div>
       <span class="caps">{{ footDate }}</span>
     </footer>
     <p class="credit" aria-hidden="true">&nbsp;</p>
@@ -403,42 +427,94 @@
    ✏️  À MODIFIER — toutes les infos du mariage sont ici.
    ================================================================= */
 const CONFIG = {
-  bride: "Nour",
-  groom: "Aissam",
-
   // Date et heure du mariage (heure de Tunisie) — dimanche 18 octobre 2026
   date: "2026-10-18T18:00:00+01:00",
   end: "2026-10-18T21:00:00+01:00",
 
-  inviteLine: "ont la joie de vous inviter à célébrer leur mariage",
-
-  // Lieu de la soirée
-  venue: "Espace Nahawand",
-  address: "La Soukra, Tunisie",
   maps: "https://www.google.com/maps/place/Espace+Nahawand/@36.8760555,10.245158,17z/data=!3m1!4b1!4m6!3m5!1s0x12e2ca9628606403:0xbe7b03ea3423ec82!8m2!3d36.8760555!4d10.245158!16s%2Fg%2F11dx9bb82t",
 
-  // Programme (laisser [] pour masquer la section)
-  programme: [
-    { time: "18h00", what: "Entrée des mariés" },
-    { time: "18h15", what: "Ketben sdek" },
-    { time: "19h00", what: "Réception & célébration" },
-    { time: "21h00", what: "Fin de la soirée" }
-  ],
-
-  closing: "Votre présence sera notre plus beau cadeau",
-
   // Musique : mettre un fichier .mp3 dans le dossier et écrire son nom, ex. "musique.mp3"
-  music: ""
+  music: "",
+
+  // Textes de l'invitation, une version par langue (le site arabe est publié sur /ar/)
+  fr: {
+    bride: "Nour",
+    groom: "Aissam",
+    inviteLine: "ont la joie de vous inviter à célébrer leur mariage",
+    venue: "Espace Nahawand",
+    address: "La Soukra, Tunisie",
+    programme: [                      // laisser [] pour masquer la section
+      { time: "18h00", what: "Entrée des mariés" },
+      { time: "18h15", what: "Ketben sdek" },
+      { time: "19h00", what: "Réception & célébration" },
+      { time: "21h00", what: "Fin de la soirée" }
+    ],
+    closing: "Votre présence sera notre plus beau cadeau"
+  },
+  ar: {
+    bride: "نور",
+    groom: "عصام",
+    inviteLine: "يتشرّفان بدعوتكم لمشاركتهما فرحة زفافهما",
+    venue: "فضاء نهاوند",
+    address: "السكرة، تونس",
+    programme: [
+      { time: "18:00", what: "دخول العروسين" },
+      { time: "18:15", what: "كتبان الصداق" },
+      { time: "19:00", what: "الاستقبال والاحتفال" },
+      { time: "21:00", what: "نهاية السهرة" }
+    ],
+    closing: "حضوركم هو أجمل هدية لنا"
+  }
+};
+
+// Textes de l'interface
+const UI = {
+  fr: {
+    otherLang: "ar", switch: "العربية", switchLabel: "Lire l’invitation en arabe",
+    invited: "Vous êtes invités", forGuest: "Pour", save: "Save the date", openLabel: "Ouvrir l'invitation", touch: "Touchez le sceau",
+    musicOn: "Lancer la musique", musicOff: "Couper la musique", seaAlt: "La mer au coucher du soleil", discover: "Découvrir",
+    verseLabel: "Verset", verseRef: "Ar-Rûm · 30:21",
+    countIn: "Le grand jour dans", days: "jours", hours: "heures", min: "min", sec: "sec", today: "C’est aujourd’hui",
+    countAria: l => `Compte à rebours : ${l.d} jours, ${l.h} heures`,
+    whereWhen: "Où & quand", evening: "La soirée", directions: "Itinéraire", calendar: "Agenda",
+    schedule: "Le déroulé", programme: "Programme",
+    stageAlt: "Nour et Aissam se tiennent par le bras",
+    stageAria: "Au coucher du soleil, sur la plage, Nour et Aissam dansent ; un chien et un chat se promènent autour d’eux.",
+    handInHand: "Main dans la main", forLife: "pour toute une vie",
+    title: "Nour & Aissam", wedding: "Mariage de Nour & Aissam",
+    months: ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"],
+    days7: ["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"],
+    hours12: (a, b) => `${a.h}h${pad(a.mi)} – ${b.h}h${pad(b.mi)}`
+  },
+  ar: {
+    otherLang: "fr", switch: "Français", switchLabel: "قراءة الدعوة بالفرنسية",
+    invited: "أنتم مدعوون", forGuest: "إلى", save: "احجزوا التاريخ", openLabel: "فتح الدعوة", touch: "المسوا الختم",
+    musicOn: "تشغيل الموسيقى", musicOff: "إيقاف الموسيقى", seaAlt: "البحر عند الغروب", discover: "اكتشفوا",
+    verseLabel: "آية", verseRef: "سورة الروم · الآية 21",
+    countIn: "اليوم الموعود بعد", days: "أيام", hours: "ساعات", min: "دقائق", sec: "ثوانٍ", today: "إنّه اليوم!",
+    countAria: l => `العدّ التنازلي: ${l.d} أيام و${l.h} ساعات`,
+    whereWhen: "المكان والزمان", evening: "السهرة", directions: "الاتجاهات", calendar: "التقويم",
+    schedule: "سير الحفل", programme: "البرنامج",
+    stageAlt: "نور وعصام يدًا بيد",
+    stageAria: "عند الغروب على الشاطئ، نور وعصام يرقصان، وكلب وقطة يتجولان حولهما.",
+    handInHand: "يدًا بيد", forLife: "مدى الحياة",
+    title: "نور وعصام", wedding: "زفاف نور وعصام",
+    months: ["جانفي","فيفري","مارس","أفريل","ماي","جوان","جويلية","أوت","سبتمبر","أكتوبر","نوفمبر","ديسمبر"],
+    days7: ["الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة","السبت"],
+    hours12: (a, b) => `من ${pad(a.h)}:${pad(a.mi)} إلى ${pad(b.h)}:${pad(b.mi)}`
+  }
 };
 /* ================================================================= */
 
 
+const QS = new URLSearchParams(location.search);
+const LANG = (QS.get("lang") || window.LANG_DEFAULT) === "ar" ? "ar" : "fr";
+document.documentElement.lang = LANG;
+document.documentElement.dir = LANG === "ar" ? "rtl" : "ltr";
 document.documentElement.classList.add("js");
 const reduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const $ = s => document.querySelector(s);
 const pad = n => String(n).padStart(2, "0");
-const MONTHS = ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
-const DAYS = ["dimanche","lundi","mardi","mercredi","jeudi","vendredi","samedi"];
 
 function parts(iso) {
   const [d, t] = iso.split("T");
@@ -564,8 +640,8 @@ void main(){
   gl_FragColor = t;
 }`;
 
-/* Le chien : planche de 12 images (cycle de marche sur place). La vitesse de lecture suit la distance parcourue
-   par le chien à l'écran, pour que les pattes ne « glissent » pas. */
+/* Les animaux : planche de 9 images (cycle de course ou de marche sur place). La vitesse de lecture suit la distance
+   parcourue à l'écran, pour que les pattes ne « glissent » pas. */
 const DOG_FRAG = `
 uniform sampler2D uMap; uniform vec2 uGrid; uniform float uFrame; varying vec2 vUv;
 void main(){
@@ -654,9 +730,16 @@ function makeEngine() {
     } catch (e) { return null; }
   }
 
-  // La scène « Main dans la main » : plage, couple aquarelle, chien qui se promène, lucioles dorées
+  // La scène « Main dans la main » : plage, couple qui danse, chien et chat qui se promènent, lucioles dorées
   const DANCE_COLS = 4, DANCE_ROWS = 3, DANCE_COUNT = 11, DANCE_FPS = 2.2, DANCE_SHOE = 0.0850;   // img/web/couple-danse.webp : 11 images, 2,2 par seconde (cycle ≈ 5 s)
-  const DOG_COLS = 4, DOG_ROWS = 3, DOG_PAW = 0.0145, DOG_STRIDE = 0.8;       // img/web/chien-marche.webp : 12 images ; une foulée = 0,8 longueur de chien
+  // Les promeneurs : planches de 9 images ; width = largeur à l'écran en fraction de la hauteur du couple ; stride = distance
+  // parcourue par cycle (en largeurs d'animal) ; speed = vitesse relative ; y = hauteur du sol ; start/rest = départ (fraction de la largeur)
+  const WALKERS = [
+    { img: "img/web/chien-or.webp", cols: 3, rows: 3, paw: 0.0288, width: 0.46, stride: 1.25, speed: 1.7, y: 0.070, order: 3,   dir: -1, start: 1.15, rest: 0.22,
+      // si la planche du chien doré manque, on retombe sur le chien aquarelle (img/art/chien-marche-sprite.webp)
+      fallback: { img: "img/web/chien-marche.webp", cols: 4, rows: 3, paw: 0.0145, width: 0.32, stride: 0.8, speed: 1.0 } },
+    { img: "img/web/chat.webp",     cols: 3, rows: 3, paw: 0.0242, width: 0.30, stride: 0.80, speed: 0.5, y: 0.100, order: 1.5, dir:  1, start: -0.15, rest: 0.80 }
+  ];
   function makeStage(canvas, onFail) {
     if (!window.THREE) return null;
     try {
@@ -675,18 +758,19 @@ function makeEngine() {
 
       const shadowMat = (a) => new THREE.ShaderMaterial({ ...flat, uniforms: { uColor: { value: new THREE.Color(0.11, 0.20, 0.27) }, uAlpha: { value: a } }, vertexShader: PLAIN_VERT, fragmentShader: SHADOW_FRAG });
       const coupleShadow = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), shadowMat(0.30)); coupleShadow.renderOrder = 1; scene.add(coupleShadow);
-      const dogShadow = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), shadowMat(0.28)); dogShadow.renderOrder = 1; scene.add(dogShadow);
 
       const coupleMat = new THREE.ShaderMaterial({ ...flat, uniforms: { uMap: { value: null }, uGrid: { value: new THREE.Vector2(DANCE_COLS, DANCE_ROWS) }, uCount: { value: DANCE_COUNT }, uFrame: { value: 0 } }, vertexShader: COUPLE_VERT, fragmentShader: COUPLE_FRAG });
       const couple = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), coupleMat);
       couple.renderOrder = 2; couple.visible = false; scene.add(couple);
       let coupleAspect = 0.8;
 
-      const dogMat = new THREE.ShaderMaterial({ ...flat, uniforms: { uMap: { value: null }, uGrid: { value: new THREE.Vector2(DOG_COLS, DOG_ROWS) }, uFrame: { value: 0 } }, vertexShader: PLAIN_VERT, fragmentShader: DOG_FRAG });
-      const dog = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), dogMat);
-      let dogAspect = 1.18;
-      dog.visible = false;
-      dog.renderOrder = 3; scene.add(dog);
+      const walkers = WALKERS.map(cfg => {
+        const mat = new THREE.ShaderMaterial({ ...flat, uniforms: { uMap: { value: null }, uGrid: { value: new THREE.Vector2(cfg.cols, cfg.rows) }, uFrame: { value: 0 } }, vertexShader: PLAIN_VERT, fragmentShader: DOG_FRAG });
+        const mesh = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), mat);
+        mesh.visible = false; mesh.renderOrder = cfg.order; scene.add(mesh);
+        const shadow = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), shadowMat(0.26)); shadow.renderOrder = 1; shadow.visible = false; scene.add(shadow);
+        return { cfg, mat, mesh, shadow, aspect: 1.5, x: 0, dir: cfg.dir, dw: 100, dh: 70, speed: 60, placed: false };
+      });
 
       // Lucioles dorées autour du couple (additif)
       const N = innerWidth < 700 ? 22 : 36;
@@ -709,7 +793,7 @@ function makeEngine() {
       }));
       motes.frustumCulled = false; motes.renderOrder = 4; scene.add(motes);
 
-      const st = { W: 1, H: 1, dogX: 0, dir: -1, dw: 100, dh: 100, speed: 60 };
+      const st = { W: 1, H: 1, base: 60, placed: false };
       const s = { canvas, renderer, scene, camera, uniforms: U, visible: false, active: true, dirty: true, ready: false };
 
       new THREE.TextureLoader().load("img/web/couple-danse.webp", tex => {
@@ -719,12 +803,17 @@ function makeEngine() {
         coupleAspect = (tex.image.width / DANCE_COLS) / (tex.image.height / DANCE_ROWS);
         couple.visible = true; s.ready = true; layout(); s.dirty = true;
       }, undefined, () => { if (onFail) onFail(); });
-      new THREE.TextureLoader().load("img/web/chien-marche.webp", tex => {
-        tex.premultiplyAlpha = true; tex.generateMipmaps = false; tex.minFilter = THREE.LinearFilter; tex.needsUpdate = true;
-        dogMat.uniforms.uMap.value = tex;
-        dogAspect = (tex.image.width / DOG_COLS) / (tex.image.height / DOG_ROWS);
-        dog.visible = true; layout(); s.dirty = true;
-      });
+      for (const w of walkers) {
+        const charger = cfg => new THREE.TextureLoader().load(cfg.img, tex => {
+          tex.premultiplyAlpha = true; tex.generateMipmaps = false; tex.minFilter = THREE.LinearFilter; tex.needsUpdate = true;
+          w.cfg = cfg; w.mat.uniforms.uGrid.value.set(cfg.cols, cfg.rows); w.mat.uniforms.uMap.value = tex;
+          w.aspect = (tex.image.width / cfg.cols) / (tex.image.height / cfg.rows);
+          w.mesh.visible = true; w.shadow.visible = true; layout(); s.dirty = true;
+        }, undefined, () => {
+          if (cfg.fallback) charger({ ...cfg.fallback, y: cfg.y, order: cfg.order, dir: cfg.dir, start: cfg.start, rest: cfg.rest });
+        });
+        charger(w.cfg);
+      }
 
       function layout() {
         const r = canvas.getBoundingClientRect();
@@ -740,13 +829,15 @@ function makeEngine() {
         couple.position.set(couple.userData.baseX, H * 0.125 + ch * (0.5 - DANCE_SHOE), 0);
         coupleShadow.scale.set(cw * 0.95, H * 0.045, 1);
         coupleShadow.position.set(couple.userData.baseX, H * 0.12, 0);
-        st.dh = Math.min(Math.max(ch * 0.27, 92), 170);   // un chien mesure environ un tiers de la taille d'un adulte
-        st.dw = st.dh * dogAspect;
-        dog.scale.set(st.dw * (st.dir < 0 ? -1 : 1), st.dh, 1);      // la planche regarde vers la droite
-        dog.position.y = H * 0.07 + st.dh * (0.5 - DOG_PAW);
-        dogShadow.scale.set(st.dw * 0.85, st.dh * 0.16, 1);
-        dogShadow.position.y = H * 0.07 + 2;
-        st.speed = Math.min(Math.max(W * 0.11, 52), 100);
+        st.base = Math.min(Math.max(W * 0.11, 52), 100);
+        for (const w of walkers) {
+          w.dw = Math.max(ch * w.cfg.width, 84); w.dh = w.dw / w.aspect;
+          w.speed = st.base * w.cfg.speed;
+          w.mesh.scale.set(w.dw * (w.dir < 0 ? -1 : 1), w.dh, 1);      // les planches regardent vers la droite
+          w.mesh.position.y = H * w.cfg.y + w.dh * (0.5 - w.cfg.paw);
+          w.shadow.scale.set(w.dw * 0.8, w.dh * 0.14, 1);
+          w.shadow.position.y = H * w.cfg.y + 2;
+        }
         s.dirty = true;
       }
       layout();
@@ -755,20 +846,25 @@ function makeEngine() {
 
       s.update = (t, dt) => {
         U.uPar.value.set(par.x, par.y);
-        // Le chien n'est placé qu'à la première image visible, avec la vraie largeur de la scène
+        // Les animaux ne sont placés qu'à la première image visible, avec la vraie largeur de la scène
         // (au montage, la page est encore masquée par v-cloak : la scène mesure 0 px).
-        if (!st.placed && st.W > 50) { st.dogX = reduced ? st.W * 0.2 : st.W + st.dw * 0.6; st.placed = true; }
+        if (!st.placed && st.W > 50) {
+          for (const w of walkers) w.x = st.W * (reduced ? w.cfg.rest : w.cfg.start) + (reduced ? 0 : -w.dir * w.dw * 0.6);
+          st.placed = true;
+        }
         if (!st.placed) return;
         couple.position.x = couple.userData.baseX + par.x * 12;
         coupleMat.uniforms.uFrame.value = reduced ? 0 : t * DANCE_FPS;
         coupleShadow.position.x = couple.position.x;
-        if (!reduced) {
-          st.dogX += st.dir * st.speed * dt;
-          if (st.dir < 0 && st.dogX < -st.dw * 0.7) { st.dir = 1; dog.scale.x = st.dw; }
-          else if (st.dir > 0 && st.dogX > st.W + st.dw * 0.7) { st.dir = -1; dog.scale.x = -st.dw; }
-          dogMat.uniforms.uFrame.value += (st.speed * dt) / (st.dw * DOG_STRIDE) * DOG_COLS * DOG_ROWS;
+        for (const w of walkers) {
+          if (!reduced) {
+            w.x += w.dir * w.speed * dt;
+            if (w.dir < 0 && w.x < -w.dw * 0.7) { w.dir = 1; w.mesh.scale.x = w.dw; }
+            else if (w.dir > 0 && w.x > st.W + w.dw * 0.7) { w.dir = -1; w.mesh.scale.x = -w.dw; }
+            w.mat.uniforms.uFrame.value += (w.speed * dt) / (w.dw * w.cfg.stride) * w.cfg.cols * w.cfg.rows;
+          }
+          w.mesh.position.x = w.x; w.shadow.position.x = w.x;
         }
-        dog.position.x = st.dogX; dogShadow.position.x = st.dogX;
       };
       scenes.push(s);
       return s;
@@ -809,19 +905,23 @@ const { createApp, ref, computed, onMounted, onBeforeUnmount } = Vue;
 
 const app = createApp({
   setup() {
-    const C = CONFIG;
+    const t = UI[LANG];
+    const C = { ...CONFIG, ...CONFIG[LANG] };
     const couple = `${C.bride} & ${C.groom}`;
     const D = parts(C.date);
     const E = parts(C.end);
-    const hhmm = `${D.h}h${pad(D.mi)} – ${E.h}h${pad(E.mi)}`;
-    const longDate = `${DAYS[D.wd]} ${D.da} ${MONTHS[D.mo - 1]} ${D.y}`;
+    const hhmm = t.hours12(D, E);
+    const longDate = `${t.days7[D.wd]} ${D.da} ${t.months[D.mo - 1]} ${D.y}`;
     const footDate = `${pad(D.da)} · ${pad(D.mo)} · ${D.y}`;
     const gstamp = p => `${p.y}${pad(p.mo)}${pad(p.da)}T${pad(p.h)}${pad(p.mi)}00`;
     const calHref = "https://calendar.google.com/calendar/render?action=TEMPLATE"
-      + "&text=" + encodeURIComponent(`Mariage de ${couple}`)
+      + "&text=" + encodeURIComponent(t.wedding)
       + "&dates=" + gstamp(D) + "/" + gstamp(E) + "&ctz=Africa/Tunis"
       + "&location=" + encodeURIComponent(`${C.venue}, ${C.address}`);
-    const guest = new URLSearchParams(location.search).get("pour");
+    const guest = QS.get("pour");
+    // Bascule de langue : le site arabe est publié sur /ar/ (en test local, ?lang=ar fait la même chose)
+    const langHref = QS.has("lang") ? `?lang=${t.otherLang}${guest ? "&pour=" + encodeURIComponent(guest) : ""}`
+      : (LANG === "ar" ? "/" : "/ar/") + (guest ? "?pour=" + encodeURIComponent(guest) : "");
 
     // Compte à rebours
     const target = new Date(C.date).getTime();
@@ -890,7 +990,7 @@ const app = createApp({
     }
 
     onMounted(() => {
-      document.title = couple;
+      document.title = t.title;
       document.body.style.overflow = "hidden";
       if (C.music && audio.value) audio.value.src = C.music;
       timer = setInterval(() => { now.value = Date.now(); }, 1000);
@@ -904,7 +1004,7 @@ const app = createApp({
     });
     onBeforeUnmount(() => clearInterval(timer));
 
-    return { C, couple, hhmm, longDate, footDate, calHref, guest, left, step, fading, gone, siteState, stageOk, musicShown, musicOn, audio, open, toggleMusic };
+    return { C, t, LANG, langHref, couple, hhmm, longDate, footDate, calHref, guest, left, step, fading, gone, siteState, stageOk, musicShown, musicOn, audio, open, toggleMusic };
   }
 });
 
