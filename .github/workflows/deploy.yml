@@ -30,6 +30,9 @@ jobs:
           cp index.html dist/
           cp -r img/web dist/img/web
           python construire_ar.py dist/ar
+          # Anti-cache : chaque mise en ligne change l'adresse des images (?v=...). Sans cela, un telephone qui garde
+          # l'ancienne planche du couple (30 jours en cache) l'affiche avec le nouveau code : image en carre, danse cassee.
+          sed -i -E "s#(img/web/[A-Za-z0-9-]+\.webp)#\1?v=${GITHUB_SHA::8}#g" dist/index.html dist/ar/index.html
 
       - name: Envoyer sur le VPS
         env:
