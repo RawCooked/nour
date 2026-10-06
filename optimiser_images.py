@@ -89,7 +89,7 @@ if couple.exists():
 else:
     print("  manquant : img/bells/couple-maries.webp — la scène « Main dans la main » n'affichera pas le couple")
 
-print("\nCouple qui danse (planche de 30 images, 6 colonnes x 5 lignes, 11 gardées) :")
+print("\nCouple qui danse (planche de 9 images, 3 colonnes x 3 lignes, avec la rotation) :")
 
 
 def runs(profile):
@@ -118,8 +118,9 @@ def agrandir(im, k):
 # Les 30 images de la planche ne forment pas une animation continue (coiffure, visage et robe changent un peu
 # d'une image à l'autre) : jouées dans l'ordre, ça saute. On ne garde que les images « calmes » (balancement
 # lent), rangées dans l'ordre où elles se ressemblent le plus, et on les fond doucement dans le navigateur.
-DANSE_ORDRE = [0, 2, 1, 3, 5, 6, 28, 29, 24, 23, 4]
-DANSE_COLS, DANSE_ROWS = 4, 3
+DANSE_ORDRE = list(range(9))          # les 9 images dans l'ordre de la planche (la 9e rejoint la 1re : boucle)
+DANSE_COLS, DANSE_ROWS = 3, 3
+DANSE_ECHELLE = 1                      # planche source assez grande (~400 px par image) : pas d'agrandissement
 
 
 def recaler(cells, ref, rayon=5):
@@ -143,7 +144,7 @@ def recaler(cells, ref, rayon=5):
     return out
 
 
-def couple_danse(src, cols=6, rows=5):
+def couple_danse(src, cols=3, rows=3):
     """Découpe la planche (les couples sont séparés par du vide), cale chaque image sur les chaussures du marié
     (il reste en place, c'est la mariée qui tourne), garde les images calmes et les range en boucle douce."""
     sheet = Image.open(src).convert("RGBA")
@@ -187,17 +188,18 @@ def couple_danse(src, cols=6, rows=5):
     # La planche source est petite (~180 px par image) : on agrandit avec un filtre doux + un peu de netteté,
     # c'est plus propre que l'agrandissement brut du navigateur. Tout se fait en alpha pré-multiplié
     # (sinon le noir caché sous le transparent bave en liseré sombre sur les bords).
-    atlas = agrandir(atlas, 2)
-    cw, ch = cw * 2, ch * 2
-    save(atlas, "couple-danse", quality=82)
-    print(f"  {len(frames)} images de {cw}x{ch} px ; chaussures du marié à {(down * 2 + pad * 2) / ch:.4f} du bas de la case (DANCE_SHOE dans index.html)")
+    if DANSE_ECHELLE > 1:
+        atlas = agrandir(atlas, DANSE_ECHELLE)
+        cw, ch = cw * DANSE_ECHELLE, ch * DANSE_ECHELLE
+    save(atlas, "couple-danse", quality=86)
+    print(f"  {len(frames)} images de {cw}x{ch} px ; chaussures du marié à {(down + pad) * DANSE_ECHELLE / ch:.4f} du bas de la case (DANCE_SHOE dans index.html)")
 
 
-dance = ART / "couple-danse-sprite.webp"
+dance = ART / "couple-danse-9.png"
 if dance.exists():
     couple_danse(dance)
 else:
-    print("  manquant : img/art/couple-danse-sprite.webp — la scène utilisera le couple immobile")
+    print("  manquant : img/art/couple-danse-9.png — la scène utilisera le couple immobile")
 
 print("\nAnimaux qui traversent la plage (planches de 9 images, 3 colonnes x 3 lignes) :")
 

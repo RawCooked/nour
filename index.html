@@ -616,8 +616,8 @@ void main(){
   gl_FragColor = vec4(col, 1.0);
 }`;
 
-/* Le couple : balancement lent, 11 images calmes tirées de la planche et rangées en boucle ; deux images voisines
-   se fondent doucement l'une dans l'autre (elles se ressemblent, donc pas de dédoublement).
+/* Le couple : 9 images en boucle (il la fait tourner sous son bras). Chaque image tient, puis se fond très brièvement
+   dans la suivante (fondu court : pas de dédoublement des visages).
    La texture est pré-multipliée : pas de liseré sombre sur les bords de l'aquarelle. */
 const COUPLE_VERT = `
 varying vec2 vUv;
@@ -631,7 +631,7 @@ vec4 cell(float f){
 }
 void main(){
   float f0 = floor(uFrame);
-  vec4 t = mix(cell(f0), cell(f0 + 1.0), smoothstep(0.0, 1.0, fract(uFrame)));
+  vec4 t = mix(cell(f0), cell(f0 + 1.0), smoothstep(0.7, 1.0, fract(uFrame)));
   float warm = smoothstep(0.0, 1.0, vUv.x * 0.7 + vUv.y * 0.3);
   t.rgb *= mix(vec3(1.0), vec3(1.07, 0.95, 0.86), warm * 0.6);
   gl_FragColor = t;
@@ -728,7 +728,7 @@ function makeEngine() {
   }
 
   // La scène « Main dans la main » : plage, couple qui danse, chien et chat qui se promènent, lucioles dorées
-  const DANCE_COLS = 4, DANCE_ROWS = 3, DANCE_COUNT = 11, DANCE_FPS = 2.2, DANCE_SHOE = 0.0850;   // img/web/couple-danse.webp : 11 images, 2,2 par seconde (cycle ≈ 5 s)
+  const DANCE_COLS = 3, DANCE_ROWS = 3, DANCE_COUNT = 9, DANCE_FPS = 4, DANCE_SHOE = 0.0463;   // img/web/couple-danse.webp : 9 images (balancement, puis la mariée tourne), 4 par seconde (cycle ≈ 2,3 s)
   // Les promeneurs : planches de 9 images ; width = largeur à l'écran en fraction de la hauteur du couple ; stride = distance
   // parcourue par cycle (en largeurs d'animal) ; cycle = durée d'un cycle complet de pattes en secondes (la vitesse au sol en découle : largeur × stride ÷ cycle) ; y = hauteur du sol ; start/rest = départ (fraction de la largeur).
   // Ils passent DERRIÈRE le couple (sol plus haut, dessinés avant lui) : sinon ils traversent la robe et les chaussures.
