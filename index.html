@@ -8,7 +8,7 @@
 <meta name="theme-color" content="#fbf7f1">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Nour &amp; Aissam — Invitation au mariage">
-<meta property="og:description" content="Dimanche 18 octobre 2026 à 19h30. Touchez le sceau pour ouvrir l’invitation.">
+<meta property="og:description" content="Dimanche 18 octobre 2026, de 18h à 21h, à Espace Nahawand. Touchez le sceau pour ouvrir l’invitation.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='29' fill='%23fbf7f1' stroke='%23b08d57' stroke-width='3'/%3E%3Ctext x='32' y='41' font-family='Georgia,serif' font-style='italic' font-size='26' text-anchor='middle' fill='%231c3344'%3ENA%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -241,7 +241,7 @@
   <main style="max-width:32rem;margin:15vh auto;padding:0 20px;text-align:center;font-family:Georgia,serif;color:#1c3344">
     <h1 style="font-style:italic;font-weight:400;font-size:2.6rem;margin:0">Nour &amp; Aissam</h1>
     <p>ont la joie de vous inviter à célébrer leur mariage</p>
-    <p><strong>Dimanche 18 octobre 2026 à 19h30</strong></p>
+    <p><strong>Dimanche 18 octobre 2026, de 18h à 21h</strong></p>
     <p>Activez JavaScript pour découvrir l’invitation complète.</p>
   </main>
 </noscript>
@@ -346,7 +346,7 @@
 
     <section class="section" v-reveal id="lieu" aria-labelledby="h-lieu">
       <div class="rest" style="--w:30px;right:12%;top:60px" aria-hidden="true"><span class="ink wing pap-a" style="--c:var(--gold)"></span></div>
-      <span class="ink lf9 deco sway" style="width:min(20vw,110px);left:1%;top:38%;--r:16deg" aria-hidden="true"></span>
+      <span class="ink lf9 deco sway" style="width:min(20vw,110px);left:1%;top:9%;--r:16deg" aria-hidden="true"></span>
       <div class="orn" aria-hidden="true"><i></i><span class="ink pap-a"></span><i></i></div>
       <span class="caps">Où &amp; quand</span>
       <h2 id="h-lieu">La soirée</h2>
@@ -363,7 +363,7 @@
 
     <section class="section" v-reveal id="programme" aria-labelledby="h-prog" v-if="C.programme.length">
       <div class="rest" style="--w:26px;left:12%;top:70px;--delay:-2s" aria-hidden="true"><span class="ink wing pap-b" style="--c:var(--coral)"></span></div>
-      <span class="ink lf10 deco sway" style="width:min(20vw,110px);right:1%;top:44%;--r:-24deg;--t:8s" aria-hidden="true"></span>
+      <span class="ink lf10 deco sway" style="width:min(20vw,110px);right:1%;top:12%;--r:-24deg;--t:8s" aria-hidden="true"></span>
       <div class="orn" aria-hidden="true"><i></i><span class="ink lune" style="width:16px"></span><i></i></div>
       <span class="caps">Le déroulé</span>
       <h2 id="h-prog">Programme</h2>
@@ -407,21 +407,22 @@ const CONFIG = {
   groom: "Aissam",
 
   // Date et heure du mariage (heure de Tunisie) — dimanche 18 octobre 2026
-  date: "2026-10-18T19:30:00+01:00",
+  date: "2026-10-18T18:00:00+01:00",
+  end: "2026-10-18T21:00:00+01:00",
 
   inviteLine: "ont la joie de vous inviter à célébrer leur mariage",
 
-  // Lieu de la soirée (à compléter)
-  venue: "Salle des fêtes",
-  address: "Adresse à compléter",
-  maps: "https://maps.google.com/?q=Tunisie",
+  // Lieu de la soirée
+  venue: "Espace Nahawand",
+  address: "La Soukra, Tunisie",
+  maps: "https://www.google.com/maps/place/Espace+Nahawand/@36.8760555,10.245158,17z/data=!3m1!4b1!4m6!3m5!1s0x12e2ca9628606403:0xbe7b03ea3423ec82!8m2!3d36.8760555!4d10.245158!16s%2Fg%2F11dx9bb82t",
 
-  // Programme (laisser [] pour masquer la section) — horaires à confirmer
+  // Programme (laisser [] pour masquer la section)
   programme: [
-    { time: "19h30", what: "Accueil des invités" },
-    { time: "20h30", what: "Entrée des mariés" },
-    { time: "21h30", what: "Dîner" },
-    { time: "23h00", what: "Soirée dansante" }
+    { time: "18h00", what: "Entrée des mariés" },
+    { time: "18h15", what: "Ketben sdek" },
+    { time: "19h00", what: "Réception & célébration" },
+    { time: "21h00", what: "Fin de la soirée" }
   ],
 
   closing: "Votre présence sera notre plus beau cadeau",
@@ -837,13 +838,14 @@ const app = createApp({
     const C = CONFIG;
     const couple = `${C.bride} & ${C.groom}`;
     const D = parts(C.date);
-    const hhmm = `${D.h}h${pad(D.mi)}`;
+    const E = parts(C.end);
+    const hhmm = `${D.h}h${pad(D.mi)} – ${E.h}h${pad(E.mi)}`;
     const longDate = `${DAYS[D.wd]} ${D.da} ${MONTHS[D.mo - 1]} ${D.y}`;
     const footDate = `${pad(D.da)} · ${pad(D.mo)} · ${D.y}`;
     const gstamp = p => `${p.y}${pad(p.mo)}${pad(p.da)}T${pad(p.h)}${pad(p.mi)}00`;
     const calHref = "https://calendar.google.com/calendar/render?action=TEMPLATE"
       + "&text=" + encodeURIComponent(`Mariage de ${couple}`)
-      + "&dates=" + gstamp(D) + "/" + gstamp({ ...D, h: Math.min(D.h + 5, 23) }) + "&ctz=Africa/Tunis"
+      + "&dates=" + gstamp(D) + "/" + gstamp(E) + "&ctz=Africa/Tunis"
       + "&location=" + encodeURIComponent(`${C.venue}, ${C.address}`);
     const guest = new URLSearchParams(location.search).get("pour");
 
